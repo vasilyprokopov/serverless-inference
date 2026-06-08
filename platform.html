@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>digitalocean ai — the bigger picture</title>
+  <link rel="icon" href="favicon.ico" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main>
+    <h1 class="title">DigitalOcean AI</h1>
+    <p class="lead">Several ways to run AI on DigitalOcean — here's the whole stack.</p>
+    
+    <div class="stacks">
+      <!-- GPU Droplets -->
+      <div class="stack">
+        <div class="layers">
+          <div class="layer cust">prompts</div>
+          <div class="layer cust">model</div>
+          <div class="layer cust">kubernetes / inference engine</div>
+          <div class="layer do">accelerator</div>
+        </div>
+        <div class="stack-name">Droplets</div>
+        <div class="stack-tier">IaaS</div>
+      </div>
+
+      <!-- Dedicated Inference -->
+      <div class="stack">
+        <div class="layers">
+          <div class="layer cust">prompts</div>
+          <div class="layer split">model <span class="byom">byom</span></div>
+          <div class="layer do">kubernetes / inference engine</div>
+          <div class="layer do">accelerator</div>
+        </div>
+        <div class="stack-name">Dedicated Inference</div>
+        <div class="stack-tier">PaaS</div>
+      </div>
+
+      <!-- Serverless Inference (the demo) -->
+      <a class="stack link" href="index.html">
+        <div class="layers">
+          <div class="layer cust">prompts</div>
+          <div class="shared">
+            <div class="layer do">model</div>
+            <div class="layer do">kubernetes / inference engine</div>
+            <div class="layer do">accelerator</div>
+            <span class="shared-tag">shared</span>
+          </div>
+        </div>
+        <div class="stack-name">Serverless Inference ↗</div>
+        <div class="stack-tier">TaaS</div>
+      </a>
+    </div>
+
+    <div class="legend">
+      <span class="legend-item"><span class="swatch hollow"></span> customer operated</span>
+      <span class="legend-item"><span class="swatch filled"></span> digitalocean operated</span>
+      <span class="legend-item"><span class="swatch shared"></span> shared (multi-tenant)</span>
+    </div>
+  </main>
+
+  <footer class="cellar">
+    <img class="do-logo" src="do_logo_horizontal_black.svg" alt="DigitalOcean" />
+  </footer>
+</body>
+</html>

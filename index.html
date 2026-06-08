@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>serverless inference — deep dive</title>
+  <link rel="icon" href="favicon.ico" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main>
+    <h1 class="title">Serverless Inference</h1>
+
+    <div class="config">
+      <input id="key"   type="password" placeholder="model access key" autocomplete="off" spellcheck="false" />
+      <input id="model" type="text"     placeholder="router:my-router  or  deepseek-4-flash" spellcheck="false" />
+      <input id="base"  type="text"     placeholder="https://inference.do-ai.run/v1" spellcheck="false" />
+    </div>
+
+    <input id="prompt" type="text" placeholder="prompt — press enter to send" spellcheck="false" autocomplete="off" />
+
+    <div class="pipeline" id="pipeline"></div>
+    <div class="branch" id="branch"></div>
+
+    <div class="meta" id="meta"></div>
+    <div class="reply" id="reply"></div>
+  </main>
+
+  <footer class="cellar">
+    <a href="platform.html" title="see the bigger picture — DigitalOcean AI">
+      <img class="do-logo" src="do_logo_horizontal_black.svg" alt="DigitalOcean — the bigger picture" />
+    </a>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

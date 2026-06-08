@@ -1,0 +1,240 @@
+:root {
+  --bg: #000;
+  --dim-border: #333;
+  --dim-text: #6b6b6b;
+  --mid-border: #5e5e5e;
+  --mid-text: #a9a9a9;
+  --bright: #ffffff;
+  --line: #2a2a2a;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--mid-text);
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 48px 28px 110px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+/* ───────────────────────── title ───────────────────────── */
+.title {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: clamp(44px, 8vw, 92px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--bright);
+  margin: 0 0 16px;
+}
+
+/* ───────────────────────── inputs ───────────────────────── */
+.config { display: flex; gap: 22px; }
+.config input { flex: 1; min-width: 0; }
+
+input {
+  font: inherit;
+  color: var(--bright);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--dim-border);
+  padding: 5px 1px;
+  caret-color: var(--bright);
+}
+input::placeholder { color: var(--dim-text); }
+input:focus { outline: none; border-bottom-color: var(--bright); }
+
+#prompt {
+  width: 100%;
+  font-size: 17px;
+  border-bottom-color: var(--mid-border);
+  padding: 8px 1px;
+}
+
+/* ───────────────────────── pipeline ───────────────────────── */
+.pipeline {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 26px;
+  padding: 18px 0 4px;
+}
+
+.stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: max-content;
+  text-align: center;
+  border: 1px solid var(--dim-border);
+  color: var(--dim-text);
+  padding: 11px 16px;
+  white-space: nowrap;
+  letter-spacing: .04em;
+  transition: color .2s, border-color .2s, background .2s, box-shadow .2s;
+}
+
+/* ">" connector between stages */
+.stage:not(:first-child)::before {
+  content: "⟩";
+  position: absolute; top: 50%; left: -13px;
+  transform: translate(-50%, -50%);
+  color: var(--mid-border);
+}
+
+/* states */
+.stage.reached { color: var(--mid-text); border-color: var(--mid-border); }
+.stage.active,
+.stage.streaming {
+  color: var(--bright);
+  border-color: var(--bright);
+  box-shadow: 0 0 0 1px var(--bright);
+  animation: breathe 1.3s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { box-shadow: 0 0 0 1px var(--bright); }
+  50%      { box-shadow: 0 0 12px 0 rgba(255,255,255,.35); }
+}
+.stage.failed {
+  color: var(--bright);
+  border-color: var(--bright);
+  border-style: dashed;
+  animation: none;
+  box-shadow: none;
+}
+
+/* ───────────────────────── kafka branch ───────────────────────── */
+.branch { min-height: 18px; padding-left: 2px; display: flex; align-items: center; }
+.branch .stage {
+  flex: 0 0 auto;
+  border-style: dashed;
+  font-size: 13px;
+  padding: 8px 13px;
+}
+.branch .label { color: var(--dim-text); margin-right: 12px; }
+.branch .stage::before, .branch .stage::after { display: none; }
+
+/* ───────────────────────── meta + reply ───────────────────────── */
+.meta {
+  color: var(--mid-text);
+  min-height: 1.5em;
+  letter-spacing: .02em;
+  word-break: break-word;
+}
+.meta .sep { color: var(--dim-text); }
+.meta b { color: var(--bright); font-weight: 600; }
+
+.reply {
+  color: var(--bright);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: 16px;
+  min-height: 1.5em;
+}
+.reply.dim { color: var(--dim-text); }
+.reply .cursor {
+  display: inline-block;
+  width: 7px; height: 1em;
+  background: var(--bright);
+  vertical-align: text-bottom;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ───────────────────────── bigger picture (platform.html) ───────────────────────── */
+.lead { color: var(--mid-text); margin: -10px 0 0; }
+
+.xlink {
+  display: inline-block; width: fit-content;
+  color: var(--mid-text); text-decoration: none;
+  border-bottom: 1px solid var(--dim-border); padding-bottom: 1px;
+}
+.xlink:hover { color: var(--bright); border-bottom-color: var(--bright); }
+
+.legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 22px; color: var(--mid-text); }
+.legend-item { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.swatch { width: 28px; height: 15px; display: inline-block; }
+.swatch.hollow { border: 1px solid var(--dim-border); }
+.swatch.filled { background: var(--line); border: 1px solid var(--mid-border); }
+.swatch.shared { border: 1px dashed var(--mid-border); }
+
+.stacks { display: flex; gap: 26px; align-items: stretch; margin: 32px 0; }
+.stack {
+  flex: 1 1 0; min-width: 0;
+  display: flex; flex-direction: column;
+  color: inherit; text-decoration: none;
+}
+.layers { display: flex; flex-direction: column; gap: 6px; }
+.layer {
+  border: 1px solid var(--dim-border);
+  padding: 14px 14px; text-align: center;
+  letter-spacing: .03em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.layer.cust { background: transparent; border-color: var(--dim-border); color: var(--mid-text); }
+.layer.do   { background: var(--line); border-color: var(--mid-border); color: var(--bright); }
+.layer.split {
+  background: linear-gradient(100deg, var(--line) 0 48%, transparent 52% 100%);
+  border-color: var(--mid-border); color: var(--bright);
+  display: flex; justify-content: space-between; gap: 8px;
+}
+.layer.split .byom { color: var(--mid-text); }
+
+.shared {
+  position: relative;
+  display: flex; flex-direction: column; gap: 6px;
+  outline: 1px dashed var(--mid-border);   /* outline takes no layout space, so rows stay aligned across columns */
+  outline-offset: 3px;
+}
+.shared-tag {
+  position: absolute; right: 0; bottom: -7px;
+  background: var(--bg); padding: 0 5px;
+  font-size: .78em; line-height: 1; color: var(--mid-text);
+}
+
+.stack-name { margin-top: auto; padding-top: 14px; text-align: center; color: var(--bright); font-weight: 600; font-size: 1.15em;}
+.stack-tier { text-align: center; color: var(--dim-text); font-size: .85em; margin-top: 2px; }
+
+/* serverless inference is the demo entry point */
+.stack.link { cursor: pointer; }
+.stack.link:hover .layer.do { box-shadow: 0 0 0 1px var(--bright); }
+.stack.link:hover .shared { border-color: var(--bright); }
+.stack.link:hover .stack-name { text-decoration: underline; }
+
+/* ───────────────────────── cellar / footer ───────────────────────── */
+.cellar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 10;
+  width: 100%;
+  padding: 16px 28px;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  color: var(--dim-text);
+}
+.cellar a { display: inline-flex; }
+.cellar .do-logo {
+  height: 22px;
+  width: auto;
+  filter: invert(1);   /* black mark → white on the dark background */
+  opacity: .8;
+  transition: opacity .15s;
+}
+.cellar a:hover .do-logo { opacity: 1; }
