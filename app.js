@@ -62,14 +62,21 @@ function reached(id) { stageEls[id].className = "stage reached"; }
 /* ───────────────────────── meta line ───────────────────────── */
 const meta = {};
 function renderMeta() {
-  const parts = [];
-  if (meta.target) parts.push(`router <b>${esc(meta.target)}</b>`);
-  if (meta.task) parts.push(`task ${esc(meta.task)}`);
-  if (meta.model) parts.push(`model <b>${esc(meta.model)}</b>`);
-  if (meta.backend) parts.push(esc(meta.backend));
-  if (meta.ttft) parts.push(`ttft ${fmtDuration(meta.ttft)}`);
-  if (meta.tokens) parts.push(`${esc(meta.tokens)} tok`);
-  $("meta").innerHTML = parts.join('<span class="sep"> · </span>');
+  const sep = '<span class="sep"> · </span>';
+  // line 1: routing identity
+  const l1 = [];
+  if (meta.target) l1.push(`router <b>${esc(meta.target)}</b>`);
+  if (meta.task) l1.push(`task ${esc(meta.task)}`);
+  if (meta.model) l1.push(`model <b>${esc(meta.model)}</b>`);
+  // line 2: backend + metrics (kept separate so line 1 doesn't get too long)
+  const l2 = [];
+  if (meta.backend) l2.push(esc(meta.backend));
+  if (meta.ttfb) l2.push(`ttfb ${fmtDuration(meta.ttfb)}`);
+  if (meta.ttft) l2.push(`ttft ${fmtDuration(meta.ttft)}`);
+  if (meta.tokens) l2.push(`${esc(meta.tokens)} tok`);
+  let html = l1.join(sep);
+  if (l2.length) html += (l1.length ? "<br>" : "") + l2.join(sep);
+  $("meta").innerHTML = html;
 }
 
 function fmtDuration(ms) {
@@ -140,24 +147,29 @@ async function send() {
     await preroll;
     // the request has cleared the edge; we are now waiting on the API to respond.
     // park here with a live counter so a long wait reads as "waiting", not "stuck".
+    // phase 1 — waiting for response headers (the API accepting + routing the request).
     advanceTo("api/router");
-    const waitT0 = performance.now();
-    const tick = setInterval(() => setReply(`waiting for response… ${fmtDuration(performance.now() - waitT0)}`, true), 250);
+    const tick = setInterval(() => setReply(`api/router · routing, waiting for response… ${fmtDuration(performance.now() - reqT0)}`, true), 250);
 
     let resp;
     try { resp = await fetchP; }
     finally { clearTimeout(timer); clearInterval(tick); }
 
-    setReply("…", true);
-
+    // headers received → the request is past the API and into the backend.
+    // ttfb tells us how long the API/routing phase took; any further wait is the model.
+    meta.ttfb = Math.round(performance.now() - reqT0);
     if (isRouter) {
       const route = resp.headers.get("x-model-router-selected-route");
       meta.task = route || "(not exposed)";
-      renderMeta();
     }
+    renderMeta();
 
     if (!resp.ok) throw new HttpError(resp.status, await errText(resp));
     if (!resp.body) throw new Error("no readable stream in this browser");
+
+    reached("api/router");
+    advanceTo("executor"); reached("executor");
+    advanceTo("backend");
 
     await consume(resp.body, reqT0);
     reached("stream");
@@ -180,50 +192,60 @@ async function consume(stream, t0) {
   const dec = new TextDecoder();
   let buf = "", acc = "", first = true, shown = false;
 
+  // phase 2 — headers are in, we're at the backend waiting for the model to emit
+  // the first token. this counter makes a slow model read as "generating", not "stuck".
+  let genTick = setInterval(() => setReply(`backend · model generating — first token in ${fmtDuration(performance.now() - t0)}`, true), 250);
+  const stopGen = () => { clearInterval(genTick); genTick = null; };
+
   const reveal = (id) => {
     if (shown || !id) return;
     shown = true;
-    advanceTo("executor"); reached("executor");
+    reached("executor");
     advanceTo("backend");
     meta.model = id;
     meta.backend = classifyBackend(id);
     renderMeta();
   };
 
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    buf += dec.decode(value, { stream: true });
-    let nl;
-    while ((nl = buf.indexOf("\n")) !== -1) {
-      const line = buf.slice(0, nl).trim();
-      buf = buf.slice(nl + 1);
-      if (!line.startsWith("data:")) continue;
-      const data = line.slice(5).trim();
-      if (data === "[DONE]") continue;
-      let j; try { j = JSON.parse(data); } catch (_) { continue; }
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let nl;
+      while ((nl = buf.indexOf("\n")) !== -1) {
+        const line = buf.slice(0, nl).trim();
+        buf = buf.slice(nl + 1);
+        if (!line.startsWith("data:")) continue;
+        const data = line.slice(5).trim();
+        if (data === "[DONE]") continue;
+        let j; try { j = JSON.parse(data); } catch (_) { continue; }
 
-      if (j.model) reveal(j.model);
-      const delta = j.choices?.[0]?.delta?.content;
-      if (delta) {
-        if (first) {
-          first = false;
-          reached("backend");
-          advanceTo("stream", "streaming");
-          meta.ttft = Math.round(performance.now() - t0);
-          renderMeta();
-          acc = "";
+        if (j.model) reveal(j.model);
+        const delta = j.choices?.[0]?.delta?.content;
+        if (delta) {
+          if (first) {
+            first = false;
+            stopGen();
+            reached("backend");
+            advanceTo("stream", "streaming");
+            meta.ttft = Math.round(performance.now() - t0);
+            renderMeta();
+            acc = "";
+          }
+          acc += delta;
+          setReply(acc, false);
         }
-        acc += delta;
-        setReply(acc, false);
-      }
-      if (j.usage) {
-        const u = j.usage;
-        meta.tokens = `${u.prompt_tokens ?? "?"}/${u.completion_tokens ?? "?"}`;
-        renderMeta();
-        advanceTo("kafka", "reached");
+        if (j.usage) {
+          const u = j.usage;
+          meta.tokens = `${u.prompt_tokens ?? "?"}/${u.completion_tokens ?? "?"}`;
+          renderMeta();
+          advanceTo("kafka", "reached");
+        }
       }
     }
+  } finally {
+    stopGen();
   }
   if (first) setReply(acc || "(no content)", !acc);
 }
