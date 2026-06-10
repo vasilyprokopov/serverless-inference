@@ -71,7 +71,6 @@ function renderMeta() {
   // line 2: backend + metrics (kept separate so line 1 doesn't get too long)
   const l2 = [];
   if (meta.backend) l2.push(esc(meta.backend));
-  if (meta.ttfb) l2.push(`ttfb ${fmtDuration(meta.ttfb)}`);
   if (meta.ttft) l2.push(`ttft ${fmtDuration(meta.ttft)}`);
   if (meta.tokens) l2.push(`${esc(meta.tokens)} tok`);
   let html = l1.join(sep);
@@ -155,9 +154,8 @@ async function send() {
     try { resp = await fetchP; }
     finally { clearTimeout(timer); clearInterval(tick); }
 
-    // headers received → the request is past the API and into the backend.
-    // ttfb tells us how long the API/routing phase took; any further wait is the model.
-    meta.ttfb = Math.round(performance.now() - reqT0);
+    // headers received → the request is past the API and into the backend;
+    // any further wait now is the model generating.
     if (isRouter) {
       const route = resp.headers.get("x-model-router-selected-route");
       meta.task = route || "(not exposed)";
