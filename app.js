@@ -88,9 +88,9 @@ function fmtDuration(ms) {
 
 function classifyBackend(id) {
   const m = (id || "").toLowerCase();
-  if (/(^|[^a-z])(gpt|o1|o3|o4|davinci|whisper|dall)/.test(m) || m.includes("openai")) return "openai provider api";
-  if (m.includes("claude") || m.includes("anthropic")) return "anthropic provider api";
-  return "ray + vllm";
+  if (/(^|[^a-z])(gpt|o1|o3|o4|davinci|whisper|dall)/.test(m) || m.includes("openai")) return "proxied to openai provider api";
+  if (m.includes("claude") || m.includes("anthropic")) return "proxied to anthropic provider api";
+  return "ray + vllm hosted on DigitalOcean";
 }
 
 /* ───────────────────────── persistence ───────────────────────── */
