@@ -172,7 +172,7 @@ input:focus { outline: none; border-bottom-color: var(--bright); }
 .swatch.filled { background: var(--line); border: 1px solid var(--mid-border); }
 .swatch.shared { border: 1px dashed var(--mid-border); }
 
-.stacks { display: flex; gap: 26px; align-items: stretch; margin: 32px 0; }
+.stacks { display: flex; gap: 26px; align-items: stretch; margin-top: 32px; }
 .stack {
   flex: 1 1 0; min-width: 0;
   display: flex; flex-direction: column;
@@ -206,8 +206,36 @@ input:focus { outline: none; border-bottom-color: var(--bright); }
   font-size: .78em; line-height: 1; color: var(--mid-text);
 }
 
-.stack-name { margin-top: auto; padding-top: 14px; text-align: center; color: var(--bright); font-weight: 600; font-size: 1.15em;}
+.stack-name { margin-top: auto; padding-top: 14px; text-align: center; color: var(--bright); font-weight: 600; font-size: 1.25em;}
 .stack-tier { text-align: center; color: var(--dim-text); font-size: .85em; margin-top: 2px; }
+
+/* inference router — a title below, connected up to the Dedicated (PaaS) and Serverless (TaaS)
+   columns with right-angle lines. columns are 3 equal flex cells with a 26px gap, so the middle
+   column centers on 50% and the right column one (column + gap) = (100% + 26px)/3 further right. */
+.router { position: relative; height: 66px; }
+.router .bar {
+  position: absolute; top: 26px; left: 50%;
+  width: calc((100% + 26px) / 3);
+  border-top: 1px solid var(--mid-border);
+}
+.router .arm {
+  position: absolute; top: 12px; height: 14px;
+  border-left: 1px solid var(--mid-border);
+}
+.router .arm.l { left: 50%; }
+.router .arm.r { left: calc(50% + (100% + 26px) / 3); }
+.router .stem {
+  position: absolute; top: 26px; height: 14px;
+  left: calc(50% + (100% + 26px) / 6);
+  border-left: 1px solid var(--mid-border);
+}
+.router .router-label {
+  position: absolute; top: 42px;
+  left: calc(50% + (100% + 26px) / 6);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  color: var(--bright); font-weight: 600;
+}
 
 /* serverless inference is the demo entry point */
 .stack.link { cursor: pointer; }

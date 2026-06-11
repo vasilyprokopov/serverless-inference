@@ -19,7 +19,7 @@
           <div class="layer cust">prompts</div>
           <div class="layer cust">model</div>
           <div class="layer cust">kubernetes / inference engine</div>
-          <div class="layer do">accelerator</div>
+          <div class="layer do">gpu</div>
         </div>
         <div class="stack-name">Droplets</div>
         <div class="stack-tier">IaaS</div>
@@ -31,7 +31,7 @@
           <div class="layer cust">prompts</div>
           <div class="layer split">model <span class="byom">byom</span></div>
           <div class="layer do">kubernetes / inference engine</div>
-          <div class="layer do">accelerator</div>
+          <div class="layer do">gpu</div>
         </div>
         <div class="stack-name">Dedicated Inference</div>
         <div class="stack-tier">PaaS</div>
@@ -44,13 +44,22 @@
           <div class="shared">
             <div class="layer do">model</div>
             <div class="layer do">kubernetes / inference engine</div>
-            <div class="layer do">accelerator</div>
+            <div class="layer do">gpu</div>
             <span class="shared-tag">shared</span>
           </div>
         </div>
         <div class="stack-name">Serverless Inference ↗</div>
         <div class="stack-tier">TaaS</div>
       </a>
+    </div>
+
+    <!-- inference router fronts both Dedicated (PaaS) and Serverless (TaaS) -->
+    <div class="router">
+      <span class="arm l"></span>
+      <span class="bar"></span>
+      <span class="arm r"></span>
+      <span class="stem"></span>
+      <span class="router-label">inference router</span>
     </div>
 
     <div class="legend">
