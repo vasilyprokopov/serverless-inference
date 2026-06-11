@@ -73,6 +73,8 @@ function renderMeta() {
   if (meta.backend) l2.push(esc(meta.backend));
   if (meta.ttft) l2.push(`ttft ${fmtDuration(meta.ttft)}`);
   if (meta.tokens) l2.push(`${esc(meta.tokens)} tok`);
+  if (meta.price) l2.push(`$${esc(meta.price.in)}/$${esc(meta.price.out)} per Mtok`);
+  else if (meta.priceNote) l2.push(esc(meta.priceNote));
   let html = l1.join(sep);
   if (l2.length) html += (l1.length ? "<br>" : "") + l2.join(sep);
   $("meta").innerHTML = html;
@@ -83,6 +85,66 @@ function fmtDuration(ms) {
   if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
   const s = Math.round(ms / 1000);
   return `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, "0")}s`;
+}
+
+/* ───────────────────────── pricing (read from aiplatform.csv) ───────────────────────── */
+let pricing = [];
+const normName = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+
+// company prefixes that appear in the catalog name but usually NOT in the returned model id
+const PROVIDERS = ["openai", "anthropic", "nvidia", "arcee", "google", "alibaba"];
+function coreName(desc) {
+  let n = (desc || "").trim().toLowerCase();
+  for (const pv of PROVIDERS) { if (n.startsWith(pv + " ")) { n = n.slice(pv.length); break; } }
+  return normName(n);
+}
+
+async function loadPricing() {
+  try {
+    const r = await fetch(`aiplatform.csv?v=${Date.now()}`, { cache: "no-store" }); // avoid stale cache
+    if (!r.ok) return;
+    const text = await r.text();
+    pricing = text.split(/\r?\n/).slice(1).map((line) => {
+      const p = line.split(","); // columns: subservice, description, model id, rate input, rate output (no commas inside fields)
+      if (p.length < 5) return null;
+      return { id: normName(p[2]), core: coreName(p[1]), in: p[3].trim(), out: p[4].trim() };
+    }).filter((x) => x && x.id && x.in && x.out);
+  } catch (_) {}
+}
+
+// pick the catalog row whose key best matches the returned model id: contained either way,
+// forward (id contains key) preferred, then the most specific key. returns null if nothing matches.
+function bestMatch(id, key) {
+  let best = null;
+  for (const p of pricing) {
+    const k = p[key];
+    if (!k) continue;
+    let cand = null;
+    if (id.includes(k)) cand = { score: k.length, forward: 1, len: k.length };
+    else if (k.includes(id)) cand = { score: id.length, forward: 0, len: k.length };
+    if (!cand) continue;
+    let better;
+    if (!best) better = true;
+    else if (cand.score !== best.score) better = cand.score > best.score;
+    else if (cand.forward !== best.forward) better = cand.forward > best.forward;
+    // same score & direction: forward → prefer the longer (more specific) key;
+    // reverse (key contains id) → prefer the shorter key (closest to the id).
+    else better = cand.forward === 1 ? cand.len > best.len : cand.len < best.len;
+    if (better) best = { in: p.in, out: p.out, ...cand };
+  }
+  return best;
+}
+
+// match the returned model id: exact slug first, then slug containment (handles date/version
+// suffixes), then a display-name fallback. no confident match → no price (never a wrong price).
+function priceFor(modelId) {
+  const id = normName(modelId);
+  if (id.length < 2) return null;
+  for (const p of pricing) { if (p.id === id) return { in: p.in, out: p.out }; }
+  const byId = bestMatch(id, "id");
+  if (byId) return { in: byId.in, out: byId.out };
+  const byName = bestMatch(id, "core");
+  return byName ? { in: byName.in, out: byName.out } : null;
 }
 
 function classifyBackend(id) {
@@ -202,6 +264,9 @@ async function consume(stream, t0) {
     advanceTo("backend");
     meta.model = id;
     meta.backend = classifyBackend(id);
+    const pr = priceFor(id);
+    if (pr) meta.price = pr;
+    else meta.priceNote = pricing.length ? `no price for "${id}"` : "price catalog not loaded";
     renderMeta();
   };
 
@@ -285,6 +350,7 @@ function onError(e) {
 function init() {
   build();
   load();
+  loadPricing();
   setReply("", true);
   ["model", "base"].forEach((id) => $(id).addEventListener("change", save));
 
