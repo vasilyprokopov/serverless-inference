@@ -72,9 +72,9 @@ function renderMeta() {
   const l2 = [];
   if (meta.backend) l2.push(esc(meta.backend));
   if (meta.ttft) l2.push(`ttft ${fmtDuration(meta.ttft)}`);
-  if (meta.tokens) l2.push(`${esc(meta.tokens)} tok`);
   if (meta.price) l2.push(`$${esc(meta.price.in)}/$${esc(meta.price.out)} per Mtok`);
   else if (meta.priceNote) l2.push(esc(meta.priceNote));
+  if (meta.tokens) l2.push(`${esc(meta.tokens)} tok`);
   let html = l1.join(sep);
   if (l2.length) html += (l1.length ? "<br>" : "") + l2.join(sep);
   $("meta").innerHTML = html;
@@ -99,16 +99,18 @@ function coreName(desc) {
   return normName(n);
 }
 
+function parsePricing(text) {
+  return text.split(/\r?\n/).slice(1).map((line) => {
+    const p = line.split(","); // columns: subservice, description, model id, rate input, rate output (no commas inside fields)
+    if (p.length < 5) return null;
+    return { id: normName(p[2]), core: coreName(p[1]), in: p[3].trim(), out: p[4].trim() };
+  }).filter((x) => x && x.id && x.in && x.out);
+}
+
 async function loadPricing() {
   try {
-    const r = await fetch(`aiplatform.csv?v=${Date.now()}`, { cache: "no-store" }); // avoid stale cache
-    if (!r.ok) return;
-    const text = await r.text();
-    pricing = text.split(/\r?\n/).slice(1).map((line) => {
-      const p = line.split(","); // columns: subservice, description, model id, rate input, rate output (no commas inside fields)
-      if (p.length < 5) return null;
-      return { id: normName(p[2]), core: coreName(p[1]), in: p[3].trim(), out: p[4].trim() };
-    }).filter((x) => x && x.id && x.in && x.out);
+    const r = await fetch("aiplatform.csv");
+    if (r.ok) pricing = parsePricing(await r.text());
   } catch (_) {}
 }
 
