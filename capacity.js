@@ -304,13 +304,15 @@ function render() {
   const ratio = workloadRatio(c.workload);
   const split = ratio ? `${Math.round(ratio[0] / ratio[1])}:1` : "—";
   const sep = '<span class="sep"> · </span>';
+  // these stats stay coarse — always in millions, one decimal (0.2M, not 172.4K)
+  const fmtM = (n) => `${(n / 1e6).toFixed(1)}M`;
   const inBreak = c.cacheHit != null
-    ? ` (${fmtTokens(r.inputTPM * r.cacheFrac)} cached · ${fmtTokens(r.inputTPM * (1 - r.cacheFrac))} fresh)`
+    ? ` (${fmtM(r.inputTPM * r.cacheFrac)} cached · ${fmtM(r.inputTPM * (1 - r.cacheFrac))} fresh)`
     : "";
   const stats = [
     `split <b>${split}</b>`,
-    `input <b>${fmtTokens(r.inputTPM)}</b> TPM${inBreak}`,
-    `output <b>${fmtTokens(r.outputTPM)}</b> TPM`,
+    `input <b>${fmtM(r.inputTPM)}</b> TPM${inBreak}`,
+    `output <b>${fmtM(r.outputTPM)}</b> TPM`,
   ].join(sep);
   $("verdict").innerHTML = esc(headline) + `<div class="verdict-sub">${stats}</div>`;
 
