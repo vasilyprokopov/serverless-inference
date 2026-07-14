@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>capacity fit — serverless inference</title>
+  <link rel="icon" href="favicon.ico" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main>
+    <h1 class="title">Capacity Fit</h1>
+    <p class="lead">Can we accommodate this customer on SI and at what margin? Pick a benchmark, enter the customer's target throughput.</p>
+
+    <!-- ① benchmark configuration -->
+    <h2 class="block-title">benchmark configuration</h2>
+    <select id="config"></select>
+    <div class="config-readout" id="readout"></div>
+
+    <!-- ② customer target: what the customer needs, and what we'd charge them -->
+    <h2 class="block-title">customer target</h2>
+    <div class="inputs">
+      <div class="in-field">
+        <label class="field-label" for="tpm">throughput (tokens/minute)</label>
+        <input id="tpm" type="text" inputmode="numeric" placeholder="5,000,000" spellcheck="false" autocomplete="off" />
+      </div>
+      <div class="in-field">
+        <label class="field-label" for="pin">input price (/Mtok)</label>
+        <div class="money"><span class="cur">$</span><input id="pin" type="text" inputmode="decimal" placeholder="0.70" spellcheck="false" autocomplete="off" /></div>
+      </div>
+      <div class="in-field">
+        <label class="field-label" for="pout">output price (/Mtok)</label>
+        <div class="money"><span class="cur">$</span><input id="pout" type="text" inputmode="decimal" placeholder="2.20" spellcheck="false" autocomplete="off" /></div>
+      </div>
+      <div class="in-field">
+        <label class="field-label" for="pcache">cache-hit price (/Mtok)</label>
+        <div class="money"><span class="cur">$</span><input id="pcache" type="text" inputmode="decimal" placeholder="= input if blank" spellcheck="false" autocomplete="off" /></div>
+      </div>
+    </div>
+
+    <!-- ③ assumptions: what we control / compare against -->
+    <h2 class="block-title">assumptions</h2>
+    <div class="inputs">
+      <div class="in-field">
+        <label class="field-label" for="util">utilization (%)</label>
+        <input id="util" type="text" inputmode="numeric" placeholder="75" spellcheck="false" autocomplete="off" />
+      </div>
+      <div class="in-field">
+        <label class="field-label" for="hours">active hours / day</label>
+        <input id="hours" type="text" inputmode="numeric" placeholder="24" spellcheck="false" autocomplete="off" />
+      </div>
+      <div class="in-field">
+        <label class="field-label" for="actual">actual droplet price (/gpu-hr)</label>
+        <div class="money"><span class="cur">$</span><input id="actual" type="text" inputmode="decimal" placeholder="6.00" spellcheck="false" autocomplete="off" /></div>
+      </div>
+    </div>
+
+    <!-- results -->
+    <h2 class="block-title">results</h2>
+    <div class="verdict" id="verdict"></div>
+    <div class="tiles" id="tiles"></div>
+    <div class="tiles" id="specs"></div>
+    <div class="compare" id="compare"></div>
+    <p class="note" id="note"></p>
+  </main>
+
+  <footer class="cellar">
+    <a href="platform.html" title="see the bigger picture — DigitalOcean AI">
+      <img class="do-logo" src="do_logo_horizontal_black.svg" alt="DigitalOcean — the bigger picture" />
+    </a>
+  </footer>
+
+  <script src="capacity.js"></script>
+</body>
+</html>
