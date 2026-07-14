@@ -235,7 +235,7 @@ function compute(c, tpm, util, px, hours) {
 
   return {
     inputTPM, outputTPM, gpusRaw, gpusNeeded, nodesNeeded, gpusProvisioned,
-    totalMo, revenue, revPerGpuHr, cacheFrac,
+    inputMo, outputMo, totalMo, revenue, revPerGpuHr, cacheFrac,
   };
 }
 
@@ -293,11 +293,26 @@ function render() {
   const r = compute(c, tpm, util, px, hours);
   save();
 
-  $("verdict").textContent =
+  const headline =
     `Needs ${fmtInt(r.nodesNeeded)} node${r.nodesNeeded === 1 ? "" : "s"} ` +
     `(${fmtInt(r.gpusNeeded)} GPUs) to serve ${fmtTokens(tpm)} TPM ` +
     `(${fmtTokens(r.totalMo)} tokens/month) at ${fmtPct0(util)} utilization` +
     (hours < 24 ? `, active ${fmtInt(hours)}h/day.` : ".");
+
+  // second line: how that tokens/month total breaks down — input:output split
+  // (from the benchmark workload) and, within input, cached vs fresh (cache-hit %).
+  const ratio = workloadRatio(c.workload);
+  const split = ratio ? `${Math.round(ratio[0] / ratio[1])}:1` : "—";
+  const sep = '<span class="sep"> · </span>';
+  const inBreak = c.cacheHit != null
+    ? ` (${fmtTokens(r.inputMo * r.cacheFrac)} cached · ${fmtTokens(r.inputMo * (1 - r.cacheFrac))} fresh)`
+    : "";
+  const stats = [
+    `split <b>${split}</b>`,
+    `input <b>${fmtTokens(r.inputMo)}</b>${inBreak}`,
+    `output <b>${fmtTokens(r.outputMo)}</b>`,
+  ].join(sep);
+  $("verdict").innerHTML = esc(headline) + `<div class="verdict-sub">${stats}</div>`;
 
   // capacity + revenue tiles
   const tiles = [];
