@@ -305,12 +305,12 @@ function render() {
   const split = ratio ? `${Math.round(ratio[0] / ratio[1])}:1` : "—";
   const sep = '<span class="sep"> · </span>';
   const inBreak = c.cacheHit != null
-    ? ` (${fmtTokens(r.inputMo * r.cacheFrac)} cached · ${fmtTokens(r.inputMo * (1 - r.cacheFrac))} fresh)`
+    ? ` (${fmtTokens(r.inputTPM * r.cacheFrac)} cached · ${fmtTokens(r.inputTPM * (1 - r.cacheFrac))} fresh)`
     : "";
   const stats = [
     `split <b>${split}</b>`,
-    `input <b>${fmtTokens(r.inputMo)}</b>${inBreak}`,
-    `output <b>${fmtTokens(r.outputMo)}</b>`,
+    `input <b>${fmtTokens(r.inputTPM)}</b> TPM${inBreak}`,
+    `output <b>${fmtTokens(r.outputTPM)}</b> TPM`,
   ].join(sep);
   $("verdict").innerHTML = esc(headline) + `<div class="verdict-sub">${stats}</div>`;
 
