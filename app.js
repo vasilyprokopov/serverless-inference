@@ -67,7 +67,7 @@ function renderMeta() {
   const l1 = [];
   if (meta.target) l1.push(`router <b>${esc(meta.target)}</b>`);
   if (meta.task) l1.push(`task ${esc(meta.task)}`);
-  if (meta.model) l1.push(`model <b>${esc(meta.model)}</b>`);
+  if (meta.model) l1.push(`model <b>${esc(meta.model)}</b>${infoBadge(meta.info)}`);
   // line 2: backend + metrics (kept separate so line 1 doesn't get too long)
   const l2 = [];
   if (meta.backend) l2.push(esc(meta.backend));
@@ -78,6 +78,33 @@ function renderMeta() {
   let html = l1.join(sep);
   if (l2.length) html += (l1.length ? "<br>" : "") + l2.join(sep);
   $("meta").innerHTML = html;
+}
+
+const fmtCtx = (n) => (n >= 1e6 ? (n / 1e6).toFixed(2).replace(/\.?0+$/, "") + "M" : n >= 1e3 ? Math.round(n / 1e3) + "K" : String(n));
+
+// info glyph + hover tooltip with catalog details for the resolved model
+function infoBadge(info) {
+  if (!info) return "";
+  const bits = [];
+  if (info.creator) bits.push(esc(info.creator));
+  const ctxN = Number(info.ctx);
+  if (Number.isFinite(ctxN) && ctxN > 0) bits.push(fmtCtx(ctxN) + " ctx");
+  if (info.created) {
+    const d = new Date(info.created);
+    if (!isNaN(d)) bits.push("since " + d.toLocaleDateString("en-US", { month: "short", year: "numeric" }));
+  }
+  const title = info.name ? `<span class="tip-title">${esc(info.name)}</span>` : "";
+  const desc = info.desc ? `<span class="tip-desc">${esc(info.desc)}</span>` : "";
+  const row = bits.length ? `<span class="tip-row">${bits.join(" · ")}</span>` : "";
+  if (!title && !desc && !row) return "";
+  return `<span class="info" tabindex="0">` +
+    `<svg class="info-ico" viewBox="0 0 32 32" width="13" height="13" aria-hidden="true">` +
+      `<circle cx="16.5" cy="15.5" r="11.5" fill="#6355F8"></circle>` +
+      `<rect x="15" y="14" width="3" height="8" rx=".8" fill="#fff"></rect>` +
+      `<rect x="15" y="9" width="3" height="3" rx="1.5" fill="#fff"></rect>` +
+    `</svg>` +
+    `<span class="tip">${title}${desc}${row}</span>` +
+  `</span>`;
 }
 
 function fmtDuration(ms) {
@@ -118,15 +145,19 @@ async function loadPricing() {
       const p = m.pricing || {};
       const inp = toMtok(p.input_price_per_million), out = toMtok(p.output_price_per_million);
       if (inp == null || out == null) return null;
-      return { id: normName(m.model_id), core: coreName(m.name || ""), in: inp, out: out };
+      return {
+        id: normName(m.model_id), core: coreName(m.name || ""), in: inp, out: out,
+        name: m.name || m.model_id, desc: m.short_description || "",
+        creator: m.creator || "", ctx: m.context_window || "", created: m.created_at || "",
+      };
     }).filter((x) => x && x.id);
   } catch (_) {}
 }
 
-// pick the catalog row whose key best matches the returned model id: contained either way,
-// forward (id contains key) preferred, then the most specific key. returns null if nothing matches.
+// pick the catalog entry whose key best matches the returned model id: contained either way,
+// forward (id contains key) preferred, then the most specific key. returns the entry or null.
 function bestMatch(id, key) {
-  let best = null;
+  let best = null, bestEntry = null;
   for (const p of pricing) {
     const k = p[key];
     if (!k) continue;
@@ -141,21 +172,23 @@ function bestMatch(id, key) {
     // same score & direction: forward → prefer the longer (more specific) key;
     // reverse (key contains id) → prefer the shorter key (closest to the id).
     else better = cand.forward === 1 ? cand.len > best.len : cand.len < best.len;
-    if (better) best = { in: p.in, out: p.out, ...cand };
+    if (better) { best = cand; bestEntry = p; }
   }
-  return best;
+  return bestEntry;
 }
 
-// match the returned model id: exact slug first, then slug containment (handles date/version
-// suffixes), then a display-name fallback. no confident match → no price (never a wrong price).
-function priceFor(modelId) {
+// match the returned model id to a catalog entry: exact slug first, then slug containment
+// (handles date/version suffixes), then a display-name fallback. null if nothing confident.
+function matchModel(modelId) {
   const id = normName(modelId);
   if (id.length < 2) return null;
-  for (const p of pricing) { if (p.id === id) return { in: p.in, out: p.out }; }
-  const byId = bestMatch(id, "id");
-  if (byId) return { in: byId.in, out: byId.out };
-  const byName = bestMatch(id, "core");
-  return byName ? { in: byName.in, out: byName.out } : null;
+  for (const p of pricing) { if (p.id === id) return p; }
+  return bestMatch(id, "id") || bestMatch(id, "core");
+}
+
+function priceFor(modelId) {
+  const m = matchModel(modelId);
+  return m ? { in: m.in, out: m.out } : null;
 }
 
 function classifyBackend(id) {
@@ -275,8 +308,8 @@ async function consume(stream, t0) {
     advanceTo("backend");
     meta.model = id;
     meta.backend = classifyBackend(id);
-    const pr = priceFor(id);
-    if (pr) meta.price = pr;
+    const m = matchModel(id);
+    if (m) { meta.price = { in: m.in, out: m.out }; meta.info = m; }
     else meta.priceNote = pricing.length ? `no price for "${id}"` : "price catalog not loaded";
     renderMeta();
   };
