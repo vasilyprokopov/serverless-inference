@@ -87,7 +87,8 @@ function fmtDuration(ms) {
   return `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, "0")}s`;
 }
 
-/* ───────────────────────── pricing (read from aiplatform.csv) ───────────────────────── */
+/* ───────────────────────── pricing (from the public DO model catalog) ───────────────────────── */
+const CATALOG_URL = "https://api.digitalocean.com/v2/gen-ai/models/catalog";
 let pricing = [];
 const normName = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
 
@@ -99,18 +100,26 @@ function coreName(desc) {
   return normName(n);
 }
 
-function parsePricing(text) {
-  return text.split(/\r?\n/).slice(1).map((line) => {
-    const p = line.split(","); // columns: subservice, description, model id, rate input, rate output (no commas inside fields)
-    if (p.length < 5) return null;
-    return { id: normName(p[2]), core: coreName(p[1]), in: p[3].trim(), out: p[4].trim() };
-  }).filter((x) => x && x.id && x.in && x.out);
+// catalog prices are per-token (e.g. 0.0000025); ×1e6 → $/Mtok, rounded and trimmed to a clean string
+function toMtok(perToken) {
+  if (perToken == null) return null;
+  const n = perToken * 1e6;
+  if (!Number.isFinite(n)) return null;
+  return String(Math.round(n * 1e4) / 1e4);
 }
 
+// fetched once on first load; UI is unchanged — priceFor() reads from this list either way
 async function loadPricing() {
   try {
-    const r = await fetch("aiplatform.csv");
-    if (r.ok) pricing = parsePricing(await r.text());
+    const r = await fetch(CATALOG_URL, { headers: { Accept: "application/json" } });
+    if (!r.ok) return;
+    const json = await r.json();
+    pricing = (Array.isArray(json.data) ? json.data : []).map((m) => {
+      const p = m.pricing || {};
+      const inp = toMtok(p.input_price_per_million), out = toMtok(p.output_price_per_million);
+      if (inp == null || out == null) return null;
+      return { id: normName(m.model_id), core: coreName(m.name || ""), in: inp, out: out };
+    }).filter((x) => x && x.id);
   } catch (_) {}
 }
 
