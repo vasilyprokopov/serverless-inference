@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>inference router — architecture</title>
+  <link rel="icon" href="favicon.ico" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="theme.js"></script>
+</head>
+<body>
+  <main>
+    <h1 class="title">Inference Router</h1>
+    <p class="lead">One prompt in, one answer out. The router classifies the request into a task, then picks a model for that task by its selection criterion. Unmatched prompts take the fallback.</p>
+
+    <div class="arch" id="arch">
+      <div class="stage node" data-step="0">prompt</div>
+
+      <div class="conn"><span class="chev">⟩</span></div>
+
+      <div class="stage node router" data-step="1">inference<br>router</div>
+
+      <!-- branch: one bus fans the router out to every group, another collapses them into output -->
+      <div class="branch">
+        <div class="arch-tasks">
+          <!-- task 1 -->
+          <div class="task-group">
+            <div class="stage node task" data-step="2">task 1 · creative writing</div>
+            <div class="conn"><span class="chev">⟩</span></div>
+            <div class="arch-models">
+              <div class="stage node model" data-step="3">model A</div>
+              <div class="stage node model" data-step="3">model B</div>
+            </div>
+            <div class="arch-criteria" data-step="4">cheapest</div>
+          </div>
+
+          <!-- task 2 -->
+          <div class="task-group">
+            <div class="stage node task" data-step="2">task 2 · recommendation</div>
+            <div class="conn"><span class="chev">⟩</span></div>
+            <div class="arch-models">
+              <div class="stage node model" data-step="3">model A</div>
+              <div class="stage node model" data-step="3">model B</div>
+            </div>
+            <div class="arch-criteria" data-step="4">fastest</div>
+          </div>
+
+          <!-- fallback (task 3, kinda) — the catch-all when no task matches -->
+          <div class="task-group">
+            <div class="stage node task fallback" data-step="2">fallback · default</div>
+            <div class="conn"><span class="chev">⟩</span></div>
+            <div class="arch-models">
+              <div class="stage node model" data-step="3">model A</div>
+            </div>
+            <div class="arch-criteria fallback" data-step="4">default</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stage node output" data-step="5">output</div>
+    </div>
+  </main>
+
+  <footer class="cellar">
+    <img class="do-logo" src="do_logo_horizontal_black.svg" alt="DigitalOcean" />
+  </footer>
+
+  <script src="router-architecture.js"></script>
+</body>
+</html>

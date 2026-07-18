@@ -426,3 +426,83 @@ select option { background: var(--bg); color: var(--bright); }
   transition: opacity .15s;
 }
 .cellar a:hover .do-logo { opacity: 1; }
+
+/* ───────────────────────── router architecture (router-architecture.html) ───────────────────────── */
+/* left-to-right block diagram: prompt ⟩ router ⟩ [three task groups] ⟩ output.
+   reuses .stage for the blocks; the router→groups fan and groups→output collapse are
+   drawn as a vertical "bus" + per-row arms, the same border-line technique as .router. */
+.arch {
+  --arm: 30px;              /* horizontal reach from a group to its bus */
+  --gap: 46px;             /* space each side of the branch: router/output stub + bus + arm */
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;         /* narrow screens scroll rather than break the connectors */
+  padding: 12px 2px 8px;
+}
+
+/* blocks — .stage handles the look; drop its built-in ⟩ (we place connectors explicitly) */
+.arch .node { position: relative; flex: 0 0 auto; min-width: max-content; line-height: 1.3; }
+.arch .node::before { content: none; }
+.arch .node.router { font-weight: 600; color: var(--mid-text); }
+.arch .node.model { font-size: 13px; padding: 8px 13px; width: 96px; text-align: center; }
+/* uniform task width so every group's model column starts at the same x */
+.arch .node.task { width: 234px; text-align: center; }
+.arch .node.task.fallback { border-style: dashed; }
+
+/* horizontal ⟩ connector between adjacent blocks */
+.arch .conn { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; padding: 0 12px; }
+.arch .conn .chev { color: var(--mid-border); }
+
+/* the three groups, stacked; equal row heights (grid 1fr) so the buses line up */
+.branch { position: relative; margin: 0 var(--gap); align-self: stretch; display: flex; }
+.arch-tasks {
+  display: grid;
+  grid-auto-rows: 1fr;
+  gap: 18px;
+  flex: 1 1 auto;
+}
+.task-group { position: relative; display: flex; align-items: center; }
+.arch-models { display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+.arch-models .node { flex: 1 1 auto; text-align: center; }
+
+/* selection-criterion chip — metadata, not a block (styled like .stack-tier / .xlink .tag).
+   pushed to the group's right edge so every group ends at the same x → straight collapse bus. */
+.arch-criteria {
+  margin-left: auto;
+  align-self: center;
+  font-size: .78em; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--mid-text);
+  border: 1px solid var(--dim-border);
+  padding: 3px 8px; white-space: nowrap;
+  transition: color .2s, border-color .2s, box-shadow .2s;
+}
+.arch-criteria.fallback { border-style: dashed; color: var(--dim-text); }
+.arch-criteria.lit { color: var(--bright); border-color: var(--mid-border); }
+
+/* per-row arms: group ⟵ left bus, and group ⟶ right bus */
+.task-group::before,
+.task-group::after {
+  content: ""; position: absolute; top: 50%;
+  width: var(--arm); border-top: 1px solid var(--mid-border);
+}
+.task-group::before { right: 100%; margin-right: 0; }
+.task-group::after  { left: 100%; }
+
+/* the two vertical buses + the router/output stubs that meet them at mid-height */
+.branch::before,
+.branch::after {
+  content: ""; position: absolute; top: 16.5%; bottom: 16.5%;
+  border-left: 1px solid var(--mid-border);
+}
+.branch::before { left: calc(-1 * var(--arm)); }
+.branch::after  { right: calc(-1 * var(--arm)); }
+
+/* stubs joining the router and output blocks to their bus (fills gap − arm) */
+.arch .node.router::after,
+.arch .node.output::before {
+  content: ""; position: absolute; top: 50%;
+  width: calc(var(--gap) - var(--arm)); border-top: 1px solid var(--mid-border);
+}
+.arch .node.router::after { left: 100%; }
+.arch .node.output::before { right: 100%; }
