@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>inference router — architecture</title>
+  <link rel="icon" href="favicon.ico" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="theme.js"></script>
+</head>
+<body>
+  <main>
+    <h1 class="title">Inference Router</h1>
+    <p class="lead">The router classifies the request into a task, then picks a model for that task by its selection criterion. <br> Unmatched prompts take the fallback.</p>
+
+    <div class="arch" id="arch">
+      <div class="stage node" data-chain="creative recommend">prompt</div>
+
+      <div class="conn" data-chain="creative recommend"><span class="chev">⟩</span></div>
+
+      <div class="stage node router" data-chain="creative recommend">inference router<img class="router-logo" src="do_mark_black.svg" alt="DigitalOcean" /></div>
+
+      <!-- branch: a ⟩ arrow fans the router into each group, and each group ⟩ feeds the output -->
+      <div class="arch-branch">
+        <div class="arch-tasks">
+          <!-- task 1 -->
+          <div class="task-group">
+            <div class="conn line" data-chain="creative"></div>
+            <div class="stage node task" data-chain="creative">task 1 · creative writing</div>
+            <div class="conn" data-chain="creative"><span class="chev">⟩</span></div>
+            <div class="arch-models">
+              <div class="stage node model">Anthropic Claude Opus</div>
+              <div class="stage node model" data-chain="creative">OpenAI GPT</div>
+            </div>
+            <div class="arch-criteria" data-chain="creative">fastest</div>
+          </div>
+
+          <!-- task 2 -->
+          <div class="task-group">
+            <div class="conn line" data-chain="recommend"></div>
+            <div class="stage node task" data-chain="recommend">task 2 · recommendation</div>
+            <div class="conn" data-chain="recommend"><span class="chev">⟩</span></div>
+            <div class="arch-models">
+              <div class="stage node model">GLM</div>
+              <div class="stage node model" data-chain="recommend">DeepSeek Pro</div>
+            </div>
+            <div class="arch-criteria" data-chain="recommend">cheapest</div>
+          </div>
+
+          <!-- fallback (task 3, kinda) — the catch-all when no task matches -->
+          <div class="task-group">
+            <div class="conn line"></div>
+            <div class="stage node task fallback">fallback</div>
+            <div class="conn"><span class="chev">⟩</span></div>
+            <div class="arch-models">
+              <div class="stage node model">DeepSeek Flash</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="conn line" data-chain="creative recommend"></div>
+
+      <div class="stage node output" data-chain="creative recommend">output</div>
+    </div>
+
+    <div class="samples">
+      <button class="sample" type="button" data-for="creative">Compose a short poetic line</button>
+      <button class="sample" type="button" data-for="recommend">Recommend how to spend my weekend</button>
+    </div>
+  </main>
+
+  <footer class="cellar">
+    <img class="do-logo" src="do_logo_horizontal_black.svg" alt="DigitalOcean" />
+  </footer>
+
+</body>
+</html>

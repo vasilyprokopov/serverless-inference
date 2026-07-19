@@ -177,7 +177,7 @@ input:focus { outline: none; border-bottom-color: var(--bright); }
 .info .tip {
   position: absolute; left: 0; top: calc(100% + 8px); z-index: 30;
   width: max-content; max-width: 340px;
-  background: var(--tip-bg); border: 1px solid var(--mid-border); border-radius: 8px;
+  background: var(--tip-bg); border-radius: 8px;
   padding: 10px 12px; color: var(--mid-text);
   font-size: 12px; line-height: 1.45; letter-spacing: normal; white-space: normal;
   box-shadow: 0 8px 24px rgba(0, 0, 0, .6);
@@ -268,7 +268,7 @@ input:focus { outline: none; border-bottom-color: var(--bright); }
 /* inference router — a title below, connected up to the Dedicated (PaaS) and Serverless (TaaS)
    columns with right-angle lines. columns are 3 equal flex cells with a 26px gap, so the middle
    column centers on 50% and the right column one (column + gap) = (100% + 26px)/3 further right. */
-.router { position: relative; height: 66px; }
+.router { position: relative;}
 .router .bar {
   position: absolute; top: 26px; left: 50%;
   width: calc((100% + 26px) / 3);
@@ -426,3 +426,125 @@ select option { background: var(--bg); color: var(--bright); }
   transition: opacity .15s;
 }
 .cellar a:hover .do-logo { opacity: 1; }
+
+/* ───────────────────────── router architecture (router-architecture.html) ───────────────────────── */
+/* left-to-right block diagram: prompt ⟩ router ⟩ [three task groups] ⟩ output.
+   reuses .stage for the blocks; the router→groups fan and groups→output collapse are
+   drawn as a vertical "bus" + per-row arms, the same border-line technique as .router. */
+.arch {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;         /* narrow screens scroll rather than break the connectors */
+  padding: 32px 0px 32px 0px;  /* room so hover-glow box-shadows aren't clipped by the scroll box */
+}
+
+/* blocks — .stage handles the look; drop its built-in ⟩ (we place connectors explicitly).
+   static diagram: render every block in the calm mid state (no animation). */
+.arch .node { position: relative; flex: 0 0 auto; min-width: max-content; line-height: 1.3;
+  min-height: 46px; display: flex; align-items: center; justify-content: center;
+  color: var(--mid-text); border-color: var(--mid-border);
+  margin: 0 6px 0 6px }
+
+.arch .node::before { content: none; }
+.arch .node.router { font-weight: 600; background: var(--bright); color: var(--bg); border-color: var(--bright); box-shadow: 0 0 24px 2px var(--glow); }
+/* DO mark inside the router block's bottom-left corner. it sits on the bright fill, so its
+   filter is the inverse of the page's — black mark on the white block (dark), white on black (light) */
+.router-logo { position: absolute; right: 4px; bottom: 4px; height: 10px; width: auto; opacity: .9; filter: none; }
+:root[data-theme="light"] .router-logo { filter: invert(1); }
+.arch .node.model { font-size: 13px; padding: 8px 13px; text-align:left; min-width: 13rem;}
+/* fixed width sized to the longest label, so every task block matches (arrows align) */
+.arch .node.task { width: 272px; text-align: center; }
+.arch .node.task.fallback { border-style: dashed; }
+
+/* horizontal ⟩ connector between adjacent blocks */
+.arch .conn { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; padding: 0 24px; }
+.arch .conn .chev { color: var(--mid-border); transition: color .2s; }
+/* dotted line connector — fans out of the router and collapses into output; stops short of the blocks */
+.arch .conn.line { width: 56px; padding: 0 9px; }
+.arch .conn.line::before { content: ""; width: 100%; border-top: 1px dotted var(--mid-border); transition: border-top-color .2s; }
+
+/* the three groups, stacked; equal row heights (grid 1fr) so the ⟩ arrow rows align */
+.arch-branch { position: relative; align-self: stretch; display: flex; }
+/* vertical dotted spine joining the three fan lines into a fan out of the router. split at the
+   router's entry (mid) into upper/lower halves so a hovered route can light just its own segment */
+.arch-branch::before,
+.arch-branch::after {
+  content: ""; position: absolute; left: 9px;
+  border-left: 1px dotted var(--mid-border); transition: border-left-color .2s;
+}
+.arch-branch::before { top: 13.5%; bottom: 50%; }  /* mid → top (task 1) */
+.arch-branch::after  { top: 50%; bottom: 13.5%; }  /* mid → bottom (fallback) */
+.arch-tasks {
+  display: grid;
+  grid-auto-rows: 1fr;
+  gap: 32px;
+  flex: 1 1 auto;
+}
+.task-group { position: relative; display: flex; align-items: center; }
+.arch-models { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+.arch-models .node { flex: 1 1 auto; text-align: center; }
+
+/* selection-criterion chip — a badge overlapping the bottom-right corner of the
+   group's lowest model (styled like .stack-tier / .xlink .tag). */
+.arch-criteria {
+  position: absolute; right: 0; bottom: 0;
+  transform: translate(38%, 45%);
+  z-index: 2; background: var(--bg);
+  text-align: center;
+  font-size: .78em; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--mid-text);
+  border: 1px solid var(--dim-border);
+  padding: 3px 8px; white-space: nowrap;
+  transition: color .2s, border-color .2s, box-shadow .2s;
+}
+.arch-criteria.fallback { border-style: dashed; color: var(--dim-text); }
+
+/* ───────────────────────── sample prompts (hover to trace a route) ───────────────────────── */
+/* filled, rounded tags (not blocks) — bright fill so they read as pills; theme-inverted text */
+.samples { display: flex; flex-wrap: wrap; align-self: center; align-items: center; gap: 12px; }
+.sample {
+  font: inherit; color: var(--bg);
+  background: var(--bright); border: 1px solid var(--bright);
+  border-radius: 999px; padding: 3px 12px; cursor: pointer;
+  transition: box-shadow .2s, transform .15s;
+}
+.sample:hover, .sample:focus-visible {
+  outline: none; box-shadow: 0 0 12px 0 var(--glow); transform: translateY(-1px);
+}
+
+/* hover/focus a sample → glow every block, badge and connector on its chain (data-chain).
+   blocks & badges get the ring; connectors get a colour lift only. */
+main:has(.sample[data-for="creative"]:hover)       :is(.node, .arch-criteria)[data-chain~="creative"],
+main:has(.sample[data-for="creative"]:focus-visible) :is(.node, .arch-criteria)[data-chain~="creative"],
+main:has(.sample[data-for="recommend"]:hover)      :is(.node, .arch-criteria)[data-chain~="recommend"],
+main:has(.sample[data-for="recommend"]:focus-visible) :is(.node, .arch-criteria)[data-chain~="recommend"] {
+  color: var(--bright); border-color: var(--bright); box-shadow: 0 0 12px 0 var(--glow);
+}
+/* router keeps its inverted knockout text on the bright fill; take the ring only */
+main:has(.sample[data-for="creative"]:hover)       .node.router[data-chain~="creative"],
+main:has(.sample[data-for="creative"]:focus-visible) .node.router[data-chain~="creative"],
+main:has(.sample[data-for="recommend"]:hover)      .node.router[data-chain~="recommend"],
+main:has(.sample[data-for="recommend"]:focus-visible) .node.router[data-chain~="recommend"] {
+  color: var(--bg); box-shadow: 0 0 28px 3px var(--glow);
+}
+/* connectors: chevrons + dotted lines light up */
+main:has(.sample[data-for="creative"]:hover)       [data-chain~="creative"] .chev,
+main:has(.sample[data-for="creative"]:focus-visible) [data-chain~="creative"] .chev,
+main:has(.sample[data-for="recommend"]:hover)      [data-chain~="recommend"] .chev,
+main:has(.sample[data-for="recommend"]:focus-visible) [data-chain~="recommend"] .chev {
+  color: var(--bright);
+}
+main:has(.sample[data-for="creative"]:hover)       .conn.line[data-chain~="creative"]::before,
+main:has(.sample[data-for="creative"]:focus-visible) .conn.line[data-chain~="creative"]::before,
+main:has(.sample[data-for="recommend"]:hover)      .conn.line[data-chain~="recommend"]::before,
+main:has(.sample[data-for="recommend"]:focus-visible) .conn.line[data-chain~="recommend"]::before {
+  border-top-color: var(--bright);
+}
+/* spine: light only the segment the route travels. creative (top) → upper half; recommend
+   (middle) enters the fan at mid, so no vertical segment glows. */
+main:has(.sample[data-for="creative"]:hover) .arch-branch::before,
+main:has(.sample[data-for="creative"]:focus-visible) .arch-branch::before {
+  border-left-color: var(--bright);
+}
+

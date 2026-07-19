@@ -72,7 +72,7 @@ function renderMeta() {
   const l2 = [];
   if (meta.backend) l2.push(esc(meta.backend));
   if (meta.ttft) l2.push(`ttft ${fmtDuration(meta.ttft)}`);
-  if (meta.price) l2.push(`$${esc(meta.price.in)}/$${esc(meta.price.out)} per Mtok`);
+  if (meta.price) l2.push(`$${fmtPrice(meta.price.in)}/$${fmtPrice(meta.price.out)} per Mtok`);
   else if (meta.priceNote) l2.push(esc(meta.priceNote));
   if (meta.tokens) l2.push(`${esc(meta.tokens)} tok`);
   let html = l1.join(sep);
@@ -105,6 +105,13 @@ function infoBadge(info) {
     `</svg>` +
     `<span class="tip">${title}${desc}${row}</span>` +
   `</span>`;
+}
+
+// clamp a price string to at most 2 decimals, without trailing zeros: "0.975"→"0.98", "2.5"→"2.5", "15"→"15"
+function fmtPrice(v) {
+  const n = Number(v);
+  if (!Number.isFinite(n)) return esc(v);
+  return String(Math.round(n * 100) / 100);
 }
 
 function fmtDuration(ms) {
@@ -218,6 +225,7 @@ async function send() {
   const model = $("model").value.trim();
   const prompt = $("prompt").value.trim();
   const base = ($("base").value.trim() || DEFAULT_BASE).replace(/\/+$/, "");
+  const SYSTEM_PROMPT = "Be concise. Format as plain text. Do not use advanced formatting. Avoid stars (*) in text. Provide only the requested text. Avoid all introductory text, conversational comments, and follow-up questions.";
   if (!prompt) return;
   if (!key)   return fail("api/router", "no model access key");
   if (!model) return fail("api/router", "no model — type router:<name> or a model id");
@@ -244,7 +252,7 @@ async function send() {
   const fetchP = fetch(`${base}/chat/completions`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
-    body: JSON.stringify({ model, messages: [{ role: "user", content: prompt }], stream: true, stream_options: { include_usage: true } }),
+    body: JSON.stringify({ model, messages: [{ role: "system", content: SYSTEM_PROMPT }, { role: "user", content: prompt }], stream: true, stream_options: { include_usage: true } }),
     signal: ctrl.signal,
   });
 
