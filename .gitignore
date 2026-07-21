@@ -3,3 +3,4 @@
 # internal benchmark data — not for publication
 tokenomics*.csv
 .DS_Store
+.claude/worktrees/capacity-active-hours
