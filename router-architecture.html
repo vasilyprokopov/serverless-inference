@@ -14,11 +14,11 @@
     <p class="lead">The router classifies the request into a task, then picks a model for that task by its selection criterion. <br> Unmatched prompts take the fallback.</p>
 
     <div class="arch" id="arch">
-      <div class="stage node" data-chain="creative recommend">prompt</div>
+      <div class="stage node" data-chain="creative recommend fallback">prompt</div>
 
-      <div class="conn" data-chain="creative recommend"><span class="chev">⟩</span></div>
+      <div class="conn" data-chain="creative recommend fallback"><span class="chev">⟩</span></div>
 
-      <div class="stage node router" data-chain="creative recommend">inference router<img class="router-logo" src="do_mark_black.svg" alt="DigitalOcean" /></div>
+      <div class="stage node router" data-chain="creative recommend fallback">inference router<img class="router-logo" src="do_mark_black.svg" alt="DigitalOcean" /></div>
 
       <!-- branch: a ⟩ arrow fans the router into each group, and each group ⟩ feeds the output -->
       <div class="arch-branch">
@@ -49,24 +49,25 @@
 
           <!-- fallback (task 3, kinda) — the catch-all when no task matches -->
           <div class="task-group">
-            <div class="conn line"></div>
-            <div class="stage node task fallback">fallback</div>
-            <div class="conn"><span class="chev">⟩</span></div>
+            <div class="conn line" data-chain="fallback"></div>
+            <div class="stage node task fallback" data-chain="fallback">fallback</div>
+            <div class="conn" data-chain="fallback"><span class="chev">⟩</span></div>
             <div class="arch-models">
-              <div class="stage node model">DeepSeek Flash</div>
+              <div class="stage node model" data-chain="fallback">DeepSeek Flash</div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="conn line" data-chain="creative recommend"></div>
+      <div class="conn line" data-chain="creative recommend fallback"></div>
 
-      <div class="stage node output" data-chain="creative recommend">output</div>
+      <div class="stage node output" data-chain="creative recommend fallback">output</div>
     </div>
 
     <div class="samples">
       <button class="sample" type="button" data-for="creative">Compose a short poetic line</button>
       <button class="sample" type="button" data-for="recommend">Recommend how to spend my weekend</button>
+      <button class="sample" type="button" data-for="fallback">What's up?</button>
     </div>
   </main>
 

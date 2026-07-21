@@ -547,4 +547,27 @@ main:has(.sample[data-for="creative"]:hover) .arch-branch::before,
 main:has(.sample[data-for="creative"]:focus-visible) .arch-branch::before {
   border-left-color: var(--bright);
 }
+/* fallback (bottom row) → light the LOWER spine half (mid → bottom) */
+main:has(.sample[data-for="fallback"]:hover) .arch-branch::after,
+main:has(.sample[data-for="fallback"]:focus-visible) .arch-branch::after {
+  border-left-color: var(--bright);
+}
+
+/* fallback route ("What's up?") — no defined task; router sends it to the default model */
+main:has(.sample[data-for="fallback"]:hover)       :is(.node, .arch-criteria)[data-chain~="fallback"],
+main:has(.sample[data-for="fallback"]:focus-visible) :is(.node, .arch-criteria)[data-chain~="fallback"] {
+  color: var(--bright); border-color: var(--bright); box-shadow: 0 0 12px 0 var(--glow);
+}
+main:has(.sample[data-for="fallback"]:hover)       .node.router[data-chain~="fallback"],
+main:has(.sample[data-for="fallback"]:focus-visible) .node.router[data-chain~="fallback"] {
+  color: var(--bg); box-shadow: 0 0 28px 3px var(--glow);
+}
+main:has(.sample[data-for="fallback"]:hover)       [data-chain~="fallback"] .chev,
+main:has(.sample[data-for="fallback"]:focus-visible) [data-chain~="fallback"] .chev {
+  color: var(--bright);
+}
+main:has(.sample[data-for="fallback"]:hover)       .conn.line[data-chain~="fallback"]::before,
+main:has(.sample[data-for="fallback"]:focus-visible) .conn.line[data-chain~="fallback"]::before {
+  border-top-color: var(--bright);
+}
 
