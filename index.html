@@ -3,36 +3,77 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>serverless inference — deep dive</title>
+  <title>digitalocean ai — the bigger picture</title>
   <link rel="icon" href="favicon.ico" />
   <link rel="stylesheet" href="styles.css" />
   <script src="theme.js"></script>
 </head>
 <body>
   <main>
-    <h1 class="title">Inference Router</h1>
+    <h1 class="title">DigitalOcean AI</h1>
+    <p class="lead">Several ways to run AI on DigitalOcean — here's the whole stack.</p>
+    
+    <div class="stacks">
+      <!-- GPU Droplets -->
+      <div class="stack">
+        <div class="layers">
+          <div class="layer cust">prompts</div>
+          <div class="layer cust">model</div>
+          <div class="layer cust">kubernetes / inference engine</div>
+          <div class="layer do">gpu</div>
+        </div>
+        <div class="stack-name">Droplets</div>
+        <div class="stack-tier">IaaS</div>
+      </div>
 
-    <div class="config">
-      <input id="key"   type="password" placeholder="model access key" autocomplete="off" spellcheck="false" />
-      <input id="model" type="text"     placeholder="router:my-router  or  deepseek-4-flash" spellcheck="false" />
-      <input id="base"  type="text"     placeholder="https://inference.do-ai.run/v1" spellcheck="false" />
+      <!-- Dedicated Inference -->
+      <div class="stack">
+        <div class="layers">
+          <div class="layer cust">prompts</div>
+          <div class="layer split">model <span class="byom">byom</span></div>
+          <div class="layer do">kubernetes / inference engine</div>
+          <div class="layer do">gpu</div>
+        </div>
+        <div class="stack-name">Dedicated Inference</div>
+        <div class="stack-tier">PaaS</div>
+      </div>
+
+      <!-- Serverless Inference (the demo) -->
+      <a class="stack link" href="index.html">
+        <div class="layers">
+          <div class="layer cust">prompts</div>
+          <div class="shared">
+            <div class="layer do">model</div>
+            <div class="layer do">kubernetes / inference engine</div>
+            <div class="layer do">gpu</div>
+            <span class="shared-tag">shared</span>
+          </div>
+        </div>
+        <div class="stack-name">Serverless Inference ↗</div>
+        <div class="stack-tier">TaaS</div>
+      </a>
     </div>
 
-    <input id="prompt" type="text" placeholder="prompt — press enter to send" spellcheck="false" autocomplete="off" />
+    <!-- inference router fronts both Dedicated (PaaS) and Serverless (TaaS) -->
+    <div class="router">
+      <span class="arm l"></span>
+      <span class="bar"></span>
+      <span class="arm r"></span>
+      <span class="stem"></span>
+      <span class="router-label">inference router</span>
+    </div>
 
-    <div class="pipeline" id="pipeline"></div>
-    <div class="branch" id="branch"></div>
+    <div class="legend">
+      <span class="legend-item"><span class="swatch hollow"></span> customer operated</span>
+      <span class="legend-item"><span class="swatch filled"></span> digitalocean operated</span>
+      <span class="legend-item"><span class="swatch shared"></span> shared (multi-tenant)</span>
+    </div>
 
-    <div class="meta" id="meta"></div>
-    <div class="reply" id="reply"></div>
+    <a class="xlink" href="capacity.html" title="internal — benchmark-based capacity sizing">capacity fit — will a customer fit on SI? <span class="tag">internal</span></a>
   </main>
 
   <footer class="cellar">
-    <a href="platform.html" title="see the bigger picture — DigitalOcean AI">
-      <img class="do-logo" src="do_logo_horizontal_black.svg" alt="DigitalOcean — the bigger picture" />
-    </a>
+    <img class="do-logo" src="do_logo_horizontal_black.svg" alt="DigitalOcean" />
   </footer>
-
-  <script src="app.js"></script>
 </body>
 </html>
