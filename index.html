@@ -10,8 +10,7 @@
 </head>
 <body>
   <main>
-    <h1 class="title">DigitalOcean AI</h1>
-    <p class="lead">Several ways to run AI on DigitalOcean — here's the whole stack.</p>
+    <h1 class="title">AI Play</h1>
     
     <div class="stacks">
       <!-- GPU Droplets -->
@@ -22,8 +21,8 @@
           <div class="layer cust">kubernetes / inference engine</div>
           <div class="layer do">gpu</div>
         </div>
-        <div class="stack-name">Droplets</div>
-        <div class="stack-tier">IaaS</div>
+        <div class="stack-name">GPU Droplets</div>
+        <div class="stack-tier">per GPU/hr</div>
       </div>
 
       <!-- Dedicated Inference -->
@@ -35,11 +34,11 @@
           <div class="layer do">gpu</div>
         </div>
         <div class="stack-name">Dedicated Inference</div>
-        <div class="stack-tier">PaaS</div>
+        <div class="stack-tier">per GPU/hr</div>
       </div>
 
       <!-- Serverless Inference (the demo) -->
-      <a class="stack link" href="index.html">
+      <a class="stack link" href="serverless-inference.html">
         <div class="layers">
           <div class="layer cust">prompts</div>
           <div class="shared">
@@ -50,18 +49,18 @@
           </div>
         </div>
         <div class="stack-name">Serverless Inference ↗</div>
-        <div class="stack-tier">TaaS</div>
+        <div class="stack-tier">per Mtok</div>
       </a>
     </div>
 
     <!-- inference router fronts both Dedicated (PaaS) and Serverless (TaaS) -->
-    <div class="router">
+    <a class="router link" href="inference-router.html" title="how the inference router classifies and routes prompts">
       <span class="arm l"></span>
       <span class="bar"></span>
       <span class="arm r"></span>
       <span class="stem"></span>
-      <span class="router-label">inference router</span>
-    </div>
+      <span class="router-label">inference router ↗</span>
+    </a>
 
     <div class="legend">
       <span class="legend-item"><span class="swatch hollow"></span> customer operated</span>
@@ -69,7 +68,6 @@
       <span class="legend-item"><span class="swatch shared"></span> shared (multi-tenant)</span>
     </div>
 
-    <a class="xlink" href="capacity.html" title="internal — benchmark-based capacity sizing">capacity fit — will a customer fit on SI? <span class="tag">internal</span></a>
   </main>
 
   <footer class="cellar">

@@ -206,7 +206,7 @@ input:focus { outline: none; border-bottom-color: var(--bright); }
 }
 @keyframes blink { 50% { opacity: 0; } }
 
-/* ───────────────────────── bigger picture (platform.html) ───────────────────────── */
+/* ───────────────────────── bigger picture (index.html) ───────────────────────── */
 .lead { color: var(--mid-text); margin: -10px 0 0; }
 
 .xlink {
@@ -268,7 +268,7 @@ input:focus { outline: none; border-bottom-color: var(--bright); }
 /* inference router — a title below, connected up to the Dedicated (PaaS) and Serverless (TaaS)
    columns with right-angle lines. columns are 3 equal flex cells with a 26px gap, so the middle
    column centers on 50% and the right column one (column + gap) = (100% + 26px)/3 further right. */
-.router { position: relative;}
+.router { position: relative; height: 66px; margin-top: -8px; }
 .router .bar {
   position: absolute; top: 26px; left: 50%;
   width: calc((100% + 26px) / 3);
@@ -292,6 +292,11 @@ input:focus { outline: none; border-bottom-color: var(--bright); }
   white-space: nowrap;
   color: var(--bright); font-weight: 600;
 }
+a.router.link { display: block; text-decoration: none; cursor: pointer; }
+a.router.link:hover .router-label { text-decoration: underline; }
+a.router.link:hover .bar,
+a.router.link:hover .arm,
+a.router.link:hover .stem { border-color: var(--bright); }
 
 /* serverless inference is the demo entry point */
 .stack.link { cursor: pointer; }
@@ -427,7 +432,7 @@ select option { background: var(--bg); color: var(--bright); }
 }
 .cellar a:hover .do-logo { opacity: 1; }
 
-/* ───────────────────────── router architecture (router-architecture.html) ───────────────────────── */
+/* ───────────────────────── router architecture (inference-router.html) ───────────────────────── */
 /* left-to-right block diagram: prompt ⟩ router ⟩ [three task groups] ⟩ output.
    reuses .stage for the blocks; the router→groups fan and groups→output collapse are
    drawn as a vertical "bus" + per-row arms, the same border-line technique as .router. */

@@ -1,62 +1,57 @@
-# Serverless Inference — Visual Deep Dive
+# Serverless Inference — visual explainers
 
-A single-page demo that narrates the **DigitalOcean Serverless Inference** request path
-left-to-right while making a **real** streaming call to the API. As the request fires, each
-architectural stage lights up; the page reveals which model the **Inference Router** picked
-and streams the reply token-by-token.
+Static pages explaining DigitalOcean Serverless Inference and its Inference Router.
+Plain HTML/CSS/JS — no build step, no server-side code. Every page has a dark/light toggle.
 
-Architecture and stages follow the
-[DigitalOcean Serverless Inference Deep Dive](https://www.digitalocean.com/blog/serverless-inference-deep-dive):
+## Pages
 
-```
-Client → Cloudflare → Load Balancer → Traefik (DOKS) → Intelligent Inference API
-       → Model Executor → Model Backend (Ray + vLLM, or provider API) → Streaming Response → Client
-                                  ↳ Kafka (billing & telemetry, async)
-```
-
-Pure static — just `index.html`, `styles.css`, `app.js`. No build step, no server.
+- `index.html` — landing page: where Serverless Inference sits in the DigitalOcean AI stack
+  (Droplets / Dedicated Inference / Serverless Inference). Links out to the live demo and the
+  inference router diagram.
+- `serverless-inference.html` — live demo. Enter a DO model access key and a model (or
+  `router:<name>`), press Enter; it makes a real streaming API call and lights up each
+  request-path stage as the reply streams.
+- `inference-router.html` — static diagram of the Inference Router: a prompt is classified into
+  a task, then routed to a model by a selection criterion, with a fallback for unmatched prompts.
+  Hover a sample prompt to trace its path.
+- `capacity.html` — internal sizing tool. Reads `tokenomics.csv`, which is git-ignored and not
+  published, so this page does not function in the public repo.
 
 ## Run
 
-`fetch()` from a `file://` page is unreliable, so serve over HTTP:
+Serve over HTTP (a `file://` page can't `fetch`):
 
 ```bash
-cd serverless-inference
 python3 -m http.server 8000
 # open http://localhost:8000
 ```
 
-The whole UI is three bare fields and a prompt — no buttons:
+## Live demo (`serverless-inference.html`)
 
-1. **model access key** — paste a DO model access key (stored only in your browser's `localStorage`).
-2. **model** — type either a router (`router:my-router`) or a specific model id (`llama3.3-70b`).
-   It's sent verbatim as the API's `model` param. If it starts with `router:`, the page reveals the
-   matched task and the model the router actually picked.
-3. **base url** — defaults to `https://inference.do-ai.run/v1`.
+Three fields: model access key (kept only in your browser's `localStorage`), a model id or
+`router:<name>`, and a base URL (default `https://inference.do-ai.run/v1`). Type a prompt and
+press Enter.
 
-Type a prompt and press **Enter** to send. The active stage gets a bright outline; the model/task/TTFT/
-token counts appear in the line under the row, and the reply streams below it.
-
-## What's real vs. illustrative
-
-The intermediate hops (Cloudflare, Load Balancer, Traefik) aren't individually observable from a
-browser, so their progression timing is **illustrative**. Everything else is bound to **real**
-signals from the API response:
+The edge hops (Cloudflare, Load Balancer, Traefik) are shown for context; their timing is
+illustrative. Everything else is bound to real API signals:
 
 | Signal | Source |
 |---|---|
-| Matched router task | `x-model-router-selected-route` response header |
-| Selected model + backend type | `model` field in the streamed chunks |
-| TTFT | time to the first streamed token |
-| Streamed reply | SSE `delta.content` chunks |
-| Token usage → Kafka box | final `usage` object (`stream_options.include_usage`) |
+| Matched router task | `x-model-router-selected-route` header |
+| Selected model / backend | `model` field in streamed chunks |
+| TTFT | time to first streamed token |
+| Reply | SSE `delta.content` chunks |
+| Token usage | final `usage` object |
 
-## CORS caveat
+**CORS:** the page calls the API directly from the browser, so it only works if the API returns
+permissive CORS headers. If the request is blocked, put a small reverse proxy in front and point
+the base URL at it.
 
-This page calls `inference.do-ai.run` **directly from the browser**. That only works if the API
-returns permissive CORS headers (including exposing `x-model-router-selected-route`). If the browser
-blocks the request, the fetch fails before any response and the page surfaces a "Blocked / network"
-error on the Cloudflare stage — **a static page cannot bypass CORS**.
+Request path (per the
+[DigitalOcean Serverless Inference Deep Dive](https://www.digitalocean.com/blog/serverless-inference-deep-dive)):
 
-If that happens, put a tiny reverse proxy in front (serves this page and relays `/v1/*` to
-`https://inference.do-ai.run/v1/*` with the key server-side) and point the **Base URL** at it.
+```
+Client → Cloudflare → Load Balancer → Traefik (DOKS) → Inference API
+       → Model Executor → Model Backend (Ray + vLLM, or provider API) → stream → Client
+                                  ↳ Kafka (billing & telemetry, async)
+```
