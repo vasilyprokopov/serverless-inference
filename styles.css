@@ -578,30 +578,27 @@ main:has(.sample[data-for="fallback"]:focus-visible) .conn.line[data-chain~="fal
 
 
 /* ---- mars-architecture.html ---- */
-main.wide { max-width: 1240px; min-height: 100vh; box-sizing: border-box; }
-.mars { position: relative; margin: auto; padding-bottom: 150px; display: flex; align-items: center; font-size: 17px; }
-.mars .arr { stroke: var(--mid-border); fill: none; stroke-width: 1; transition: stroke .2s; }
-.mars .node { position: relative; text-align: left; display: flex; flex-direction: column; gap: 10px; transition: transform .2s, color .2s, border-color .2s, box-shadow .2s; }
+main.wide { max-width: 1320px; min-height: 100vh; box-sizing: border-box; }
+main.wide .title { font-size: clamp(24px, 2.4vw, 43px); white-space: nowrap; }
+.mars { position: relative; margin: auto; padding-bottom: 234px; display: flex; align-items: center; font-size: 17px; }
+.mars .arr { stroke: var(--mid-border); fill: none; stroke-width: 2; transition: stroke .2s; }
+.mars .node { position: relative; width: 320px; min-width: 0; height: 160px; box-sizing: border-box; text-align: left; display: flex; flex-direction: column; transition: transform .2s, color .2s, border-color .2s, box-shadow .2s; }
 .mars .node::before { content: none; }
+.mars .head { color: var(--bright); font-weight: 700; }
+.mars .inner { position: relative; margin: auto 0; border: 1px dashed var(--mid-border); padding: 14px 4px 10px; text-align: center; white-space: nowrap; }
+.mars .tag { position: absolute; top: -7px; right: 8px; background: var(--bg); padding: 0 5px; line-height: 1; font-size: .78em; color: var(--mid-text); }
 .mars .frame { position: relative; display: flex; align-items: center; border: 1px dashed var(--mid-border); padding: 22px 14px 14px; }
-.mars .frame-title { position: absolute; left: 16px; top: -9px; background: var(--bg); padding: 0 8px; letter-spacing: .12em; color: var(--mid-text); }
+.mars .frame-title, .mars .lbl, .mars .link-h { font-size: 13px; letter-spacing: .04em; color: var(--dim-text); }
+.mars .frame-title { position: absolute; left: 16px; top: -10px; background: var(--bg); padding: 0 8px; }
+.mars .link-h { width: 120px; box-sizing: border-box; padding: 0 24px; display: flex; flex-direction: column; align-items: center; gap: 4px; white-space: nowrap; }
+.mars .link-h svg { width: 72px; }
 .mars .col { position: relative; }
-.mars .col .si { position: absolute; left: 0; top: calc(100% + 54px); }
-.mars .col > svg { position: absolute; left: 50%; top: 100%; transform: translateX(-50%); }
-.mars .lbl { position: absolute; left: calc(50% + 14px); top: calc(100% + 20px); font-size: 12px; color: var(--dim-text); letter-spacing: .04em; }
-.mars .link-h { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0; font-size: 13px; color: var(--dim-text); letter-spacing: .04em; white-space: nowrap; }
-.mars .head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; color: var(--bright); }
-.mars .tag { font-size: .78em; color: var(--mid-text); }
-.mars .inner { position: relative; border: 1px dashed var(--mid-border); padding: 14px 12px 10px; text-align: center; }
-.mars .inner .tag { position: absolute; top: -7px; right: 8px; background: var(--bg); padding: 0 5px; line-height: 1; }
+.mars .col .si { position: absolute; left: 0; top: calc(100% + 88px); }
+.mars .col > svg { position: absolute; left: 50%; top: calc(100% + 24px); transform: translateX(-50%); }
+.mars .lbl { position: absolute; left: calc(50% + 14px); top: calc(100% + 34px); }
 .mars .node:hover { transform: translateY(-4px); color: var(--bright); border-color: var(--bright); box-shadow: 0 0 24px 2px var(--glow); }
 .mars .cap { position: absolute; left: 50%; transform: translateX(-50%); width: 520px; top: calc(100% + 16px); text-align: center; opacity: 0; pointer-events: none; transition: opacity .2s; color: var(--mid-text); }
 .mars .cap b { display: block; color: var(--bright); }
-.mars:has(.hr:hover) .cap.c1, .mars:has(.ag:hover) .cap.c2, .mars:has(.policy:hover) .cap.c3 { opacity: 1; }
-.mars:has(.policy:hover) .cap.c1 { opacity: 0; }
+.mars:has(.hr:hover) .cap.c1, .mars:has(.ag:hover) .cap.c2 { opacity: 1; }
 .mars:has(.hr:hover) .arr[data-c~="hr"], .mars:has(.ag:hover) .arr[data-c~="ag"], .mars:has(.si:hover) .arr[data-c~="si"] { stroke: var(--bright); stroke-dasharray: 5 5; animation: mars-flow .6s linear infinite; }
 @keyframes mars-flow { to { stroke-dashoffset: -10; } }
-.mars .link-h svg { width: 100%; }
-.mars .human + .link-h { padding: 0 0 0 12px; } .mars .frame > .link-h { padding: 0 12px; }
-main.wide .title { font-size: clamp(32px, 4vw, 72px); white-space: nowrap; }
-.mars .node.hr, .mars .node.ag, .mars .node.si { width: 320px; height: 160px; box-sizing: border-box; justify-content: center; }
