@@ -590,7 +590,7 @@ main.wide .title { font-size: clamp(32px, 4vw, 72px); white-space: nowrap; }
 .mars .tag { position: absolute; top: -7px; right: 8px; background: var(--bg); padding: 0 5px; line-height: 1; font-size: .78em; color: var(--mid-text); }
 .mars .frame { position: relative; display: flex; align-items: center; background: var(--line); padding: 48px 24px 24px; }
 .mars .lbl, .mars .link-h { font-size: 13px; letter-spacing: .04em; color: var(--dim-text); }
-.mars .frame-title { position: absolute; left: 24px; top: 14px; letter-spacing: .12em; text-transform: uppercase; color: var(--mid-text); }
+.mars .frame-title { position: absolute; left: 24px; top: 14px; letter-spacing: .12em; text-transform: uppercase; color: black; }
 .mars .human, .mars > .link-h { margin-top: 48px; }
 .mars .link-h { position: relative; width: 120px; height: 160px; box-sizing: border-box; padding: 0 24px; display: flex; align-items: center; white-space: nowrap; }
 .mars .link-h svg { width: 72px; height: 10px; }
