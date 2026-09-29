@@ -13,24 +13,25 @@
     <h1 class="title">DigitalOcean Managed Agents</h1>
 
     <div class="mars">
-      <div class="stage node human"><div class="head">Human</div><div class="line">files a bug</div></div>
+      <div class="stage node human"><div class="head">Human</div><div class="line">e.g. files a bug</div></div>
 
-      <div class="link-h"><svg viewBox="0 0 72 10"><path class="arr" data-c="hr" d="M0 5H71M65 1L71 5L65 9"/></svg></div>
+      <div class="link-h"><svg viewBox="0 0 72 10"><path class="arr" data-c="hr" d="M1 5H71M7 1L1 5L7 9M65 1L71 5L65 9"/></svg></div>
 
       <div class="frame"><span class="frame-title">Managed Agents</span>
         <div class="col">
           <div class="stage node hr"><div class="head">Harness Runtime</div><div class="inner"><span class="tag">harness</span>OpenCode</div></div>
           <svg width="10" height="72" viewBox="0 0 10 72"><path class="arr" data-c="hr si" d="M5 1V71M1 7L5 1L9 7M1 65L5 71L9 65"/></svg>
           <span class="lbl">model calls</span>
-          <div class="stage node si"><div class="head">Serverless Inference</div><div class="inner"><span class="tag">model</span>Claude Haiku 4.5</div></div>
+          <div class="stage node si"><div class="head">Serverless Inference</div><div class="inner"><span class="tag">model</span>Claude Haiku</div></div>
         </div>
 
         <div class="link-h"><span class="t">tool call</span><svg viewBox="0 0 72 10"><path class="arr" data-c="hr ag" d="M1 5H71M7 1L1 5L7 9M65 1L71 5L65 9"/></svg></div>
 
-        <div class="stage node ag"><div class="head">Action Gateway</div><div class="line">GitHub · Jira · many more</div></div>
+        <div class="stage node ag"><div class="head">Action Gateway</div><div class="line">GitHub · Jira · etc.</div></div>
       </div>
 
-      <div class="cap c1">allow / ask / deny<br>microVM · pause · resume<b>Durable sessions</b>Pause, resume, hand off. State is snapshotted, not restarted.</div>
+      <div class="cap c1"><b>Durable sessions</b>Pause, resume, hand off.</br>Firecracker microVMs.</div>
+      <div class="cap c3"><b>Model Catalog</b>Open-weight and pass-through models</div>
       <div class="cap c2"><b>Credentials out of the blast radius</b>The token was never in the sandbox. Prompt injection has nothing to steal.</div>
     </div>
   </main>

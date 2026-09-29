@@ -602,6 +602,6 @@ main.wide .title { font-size: clamp(32px, 4vw, 72px); white-space: nowrap; }
 .mars .node:hover { transform: translateY(-4px); color: var(--bright); border-color: var(--bright); box-shadow: 0 0 24px 2px var(--glow); }
 .mars .cap { position: absolute; left: 50%; transform: translateX(-50%); width: 520px; top: calc(100% + 16px); text-align: center; opacity: 0; pointer-events: none; transition: opacity .2s; color: var(--mid-text); }
 .mars .cap b { display: block; color: var(--bright); }
-.mars:has(.hr:hover) .cap.c1, .mars:has(.ag:hover) .cap.c2 { opacity: 1; }
+.mars:has(.hr:hover) .cap.c1, .mars:has(.ag:hover) .cap.c2, .mars:has(.si:hover) .cap.c3 { opacity: 1; }
 .mars:has(.hr:hover) .arr[data-c~="hr"], .mars:has(.ag:hover) .arr[data-c~="ag"], .mars:has(.si:hover) .arr[data-c~="si"] { stroke: var(--bright); stroke-dasharray: 5 5; animation: mars-flow .6s linear infinite; }
 @keyframes mars-flow { to { stroke-dashoffset: -10; } }
