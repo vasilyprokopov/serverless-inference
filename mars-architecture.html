@@ -13,47 +13,43 @@
     <h1 class="title">MARS</h1>
 
     <div class="mars">
-      <svg viewBox="0 0 1500 470" width="1500" height="470" fill="none" stroke-width="1.5" aria-hidden="true">
-        <path class="arr" data-c="hr" d="M112 220H228" />
-        <path class="arr ah" data-c="hr" d="M222 214L228 220L222 226" />
-        <path class="arr" data-c="hr ag" d="M642 220H728" />
-        <path class="arr ah" data-c="hr ag" d="M722 214L728 220L722 226" />
-        <path class="arr" data-c="hr si" d="M450 108V30H1375V108" />
-        <path class="arr ah" data-c="hr si" d="M444 102L450 108L456 102" />
-        <path class="arr ah" data-c="hr si" d="M1369 102L1375 108L1381 102" />
-        <g class="lbl">
-          <text x="170" y="208" text-anchor="middle">files a bug</text>
-          <text x="685" y="208" text-anchor="middle">tool call</text>
-          <text x="912" y="20" text-anchor="middle">model calls</text>
-        </g>
-      </svg>
+      <div class="stage node human">Human</div>
 
-      <div class="stage node human" style="left:0;top:185px;width:110px;height:70px">Human</div>
+      <div class="link-h">files a bug
+        <svg width="80" height="10" viewBox="0 0 80 10"><path class="arr" data-c="hr" d="M0 5H79M74 1L79 5L74 9"/></svg>
+      </div>
 
-      <div class="frame" style="left:230px;top:60px;width:900px;height:300px"><span class="frame-title">MANAGED AGENTS</span></div>
-
-      <div class="stage node hr" style="left:260px;top:110px;width:380px;height:220px">
-        <div class="head"><b>Harness Runtime</b><span class="tag">3 · runtime</span></div>
-        <div>microVM · pause · resume</div>
-        <div class="inner"><span class="tag">2 · harness</span>OpenCode, unmodified</div>
-        <div class="policy">policy: allow / ask / deny
-          <div class="cap"><b>Governed autonomy</b>allow / ask / deny — you decide what an agent may never do.</div>
+      <div class="frame"><span class="frame-title">MANAGED AGENTS</span>
+        <div class="col">
+          <div class="stage node hr">
+            <div class="head"><b>Harness Runtime</b><span class="tag">runtime</span></div>
+            <div>microVM · pause · resume</div>
+            <div class="inner"><span class="tag">harness</span>OpenCode, unmodified</div>
+            <div class="policy">allow / ask / deny</div>
+          </div>
+          <svg width="10" height="54" viewBox="0 0 10 54"><path class="arr" data-c="hr si" d="M5 1V53M1 6L5 1L9 6M1 48L5 53L9 48"/></svg>
+          <span class="lbl">model calls</span>
+          <div class="stage node si">
+            <div class="head"><b>Serverless Inference</b><span class="tag">model</span></div>
+            <div>Claude Haiku 4.5</div>
+            <div>75+ models, or bring your own</div>
+          </div>
         </div>
-        <div class="cap"><b>Durable sessions</b>Pause, resume, hand off. State is snapshotted, not restarted.</div>
+
+        <div class="link-h">tool call
+          <svg width="80" height="10" viewBox="0 0 80 10"><path class="arr" data-c="hr ag" d="M0 5H79M74 1L79 5L74 9"/></svg>
+        </div>
+
+        <div class="stage node ag">
+          <div class="head"><b>Action Gateway</b></div>
+          <div>GitHub · Jira · 16,000+ tools</div>
+          <div>one governed endpoint</div>
+        </div>
       </div>
 
-      <div class="stage node ag" style="left:730px;top:110px;width:370px;height:220px">
-        <div class="head"><b>Action Gateway</b></div>
-        <div>GitHub · Jira · 16,000+ tools</div>
-        <div>one governed endpoint</div>
-        <div class="cap"><b>Credentials out of the blast radius</b>The token was never in the sandbox. Prompt injection has nothing to steal.</div>
-      </div>
-
-      <div class="stage node si" style="left:1250px;top:110px;width:250px;height:220px">
-        <div class="head"><b>Serverless Inference</b><span class="tag">1 · model</span></div>
-        <div>Claude Haiku 4.5</div>
-        <div>75+ models, or bring your own</div>
-      </div>
+      <div class="cap c1"><b>Durable sessions</b>Pause, resume, hand off. State is snapshotted, not restarted.</div>
+      <div class="cap c2"><b>Credentials out of the blast radius</b>The token was never in the sandbox. Prompt injection has nothing to steal.</div>
+      <div class="cap c3"><b>Governed autonomy</b>allow / ask / deny — you decide what an agent may never do.</div>
     </div>
   </main>
 
