@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mars — architecture</title>
+  <link rel="icon" href="favicon.ico" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="theme.js"></script>
+</head>
+<body>
+  <main class="wide">
+    <h1 class="title">MARS</h1>
+
+    <div class="mars">
+      <svg viewBox="0 0 1500 470" width="1500" height="470" fill="none" stroke-width="1.5" aria-hidden="true">
+        <path class="arr" data-c="hr" d="M112 220H228" />
+        <path class="arr ah" data-c="hr" d="M222 214L228 220L222 226" />
+        <path class="arr" data-c="hr ag" d="M642 220H728" />
+        <path class="arr ah" data-c="hr ag" d="M722 214L728 220L722 226" />
+        <path class="arr" data-c="hr si" d="M450 108V30H1375V108" />
+        <path class="arr ah" data-c="hr si" d="M444 102L450 108L456 102" />
+        <path class="arr ah" data-c="hr si" d="M1369 102L1375 108L1381 102" />
+        <g class="lbl">
+          <text x="170" y="208" text-anchor="middle">files a bug</text>
+          <text x="685" y="208" text-anchor="middle">tool call</text>
+          <text x="912" y="20" text-anchor="middle">model calls</text>
+        </g>
+      </svg>
+
+      <div class="stage node human" style="left:0;top:185px;width:110px;height:70px">Human</div>
+
+      <div class="frame" style="left:230px;top:60px;width:900px;height:300px"><span class="frame-title">MANAGED AGENTS</span></div>
+
+      <div class="stage node hr" style="left:260px;top:110px;width:380px;height:220px">
+        <div class="head"><b>Harness Runtime</b><span class="tag">3 · runtime</span></div>
+        <div>microVM · pause · resume</div>
+        <div class="inner"><span class="tag">2 · harness</span>OpenCode, unmodified</div>
+        <div class="policy">policy: allow / ask / deny
+          <div class="cap"><b>Governed autonomy</b>allow / ask / deny — you decide what an agent may never do.</div>
+        </div>
+        <div class="cap"><b>Durable sessions</b>Pause, resume, hand off. State is snapshotted, not restarted.</div>
+      </div>
+
+      <div class="stage node ag" style="left:730px;top:110px;width:370px;height:220px">
+        <div class="head"><b>Action Gateway</b></div>
+        <div>GitHub · Jira · 16,000+ tools</div>
+        <div>one governed endpoint</div>
+        <div class="cap"><b>Credentials out of the blast radius</b>The token was never in the sandbox. Prompt injection has nothing to steal.</div>
+      </div>
+
+      <div class="stage node si" style="left:1250px;top:110px;width:250px;height:220px">
+        <div class="head"><b>Serverless Inference</b><span class="tag">1 · model</span></div>
+        <div>Claude Haiku 4.5</div>
+        <div>75+ models, or bring your own</div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="cellar">
+    <img class="do-logo" src="do_logo_horizontal_black.svg" alt="DigitalOcean" />
+  </footer>
+</body>
+</html>

@@ -576,3 +576,27 @@ main:has(.sample[data-for="fallback"]:focus-visible) .conn.line[data-chain~="fal
   border-top-color: var(--bright);
 }
 
+
+/* ---- mars-architecture.html ---- */
+main.wide { max-width: 1584px; }
+.mars { position: relative; width: 1500px; height: 470px; margin: 0 auto; }
+.mars svg { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+.mars .arr { stroke: var(--mid-border); stroke-dasharray: 5 5; transition: stroke .2s; }
+.mars .arr.ah { stroke-dasharray: none; }
+.mars .lbl text { fill: var(--dim-text); font: 12px var(--mono); letter-spacing: .04em; }
+.mars .node { position: absolute; box-sizing: border-box; white-space: normal; text-align: left; display: flex; flex-direction: column; gap: 10px; transition: transform .2s, color .2s, border-color .2s, box-shadow .2s; }
+.mars .node::before { content: none; }
+.mars .node.human { align-items: center; justify-content: center; }
+.mars .head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; color: var(--bright); }
+.mars .tag { font-size: .78em; color: var(--mid-text); }
+.mars .inner { position: relative; border: 1px dashed var(--mid-border); padding: 14px 12px 10px; text-align: center; }
+.mars .inner .tag { position: absolute; top: -7px; right: 8px; background: var(--bg); padding: 0 5px; line-height: 1; }
+.mars .frame { position: absolute; box-sizing: border-box; border: 1px dashed var(--mid-border); }
+.mars .frame-title { position: absolute; left: 16px; top: -9px; background: var(--bg); padding: 0 8px; letter-spacing: .12em; color: var(--mid-text); }
+.mars .node:hover { transform: translateY(-4px); color: var(--bright); border-color: var(--bright); box-shadow: 0 0 24px 2px var(--glow); }
+.mars .cap { position: absolute; left: 0; right: 0; top: calc(100% + 40px); opacity: 0; pointer-events: none; transition: opacity .2s; color: var(--mid-text); white-space: normal; }
+.mars .cap b { display: block; color: var(--bright); }
+.mars .node:hover > .cap, .mars .policy:hover .cap { opacity: 1; }
+.mars .node:has(.policy:hover) > .cap { opacity: 0; }
+.mars:has(.hr:hover) .arr[data-c~="hr"], .mars:has(.ag:hover) .arr[data-c~="ag"], .mars:has(.si:hover) .arr[data-c~="si"] { stroke: var(--bright); animation: mars-flow .6s linear infinite; }
+@keyframes mars-flow { to { stroke-dashoffset: -10; } }
