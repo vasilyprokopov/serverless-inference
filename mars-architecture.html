@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mars — architecture</title>
+  <title>digitalocean managed agents — architecture</title>
   <link rel="icon" href="favicon.ico" />
   <link rel="stylesheet" href="styles.css" />
   <script src="theme.js"></script>
 </head>
 <body>
   <main class="wide">
-    <h1 class="title">MARS</h1>
+    <h1 class="title">DigitalOcean Managed Agents</h1>
 
     <div class="mars">
       <div class="stage node human">Human</div>
@@ -23,8 +23,7 @@
         <div class="col">
           <div class="stage node hr">
             <div class="head"><b>Harness Runtime</b><span class="tag">runtime</span></div>
-            <div>microVM · pause · resume</div>
-            <div class="inner"><span class="tag">harness</span>OpenCode, unmodified</div>
+            <div class="inner"><span class="tag">harness</span>OpenCode</div>
             <div class="policy">allow / ask / deny</div>
           </div>
           <svg width="10" height="54" viewBox="0 0 10 54"><path class="arr" data-c="hr si" d="M5 1V53M1 6L5 1L9 6M1 48L5 53L9 48"/></svg>
@@ -32,7 +31,6 @@
           <div class="stage node si">
             <div class="head"><b>Serverless Inference</b><span class="tag">model</span></div>
             <div>Claude Haiku 4.5</div>
-            <div>75+ models, or bring your own</div>
           </div>
         </div>
 
@@ -42,12 +40,11 @@
 
         <div class="stage node ag">
           <div class="head"><b>Action Gateway</b></div>
-          <div>GitHub · Jira · 16,000+ tools</div>
-          <div>one governed endpoint</div>
+          <div>GitHub · Jira · many more</div>
         </div>
       </div>
 
-      <div class="cap c1"><b>Durable sessions</b>Pause, resume, hand off. State is snapshotted, not restarted.</div>
+      <div class="cap c1">microVM · pause · resume<b>Durable sessions</b>Pause, resume, hand off. State is snapshotted, not restarted.</div>
       <div class="cap c2"><b>Credentials out of the blast radius</b>The token was never in the sandbox. Prompt injection has nothing to steal.</div>
       <div class="cap c3"><b>Governed autonomy</b>allow / ask / deny — you decide what an agent may never do.</div>
     </div>
