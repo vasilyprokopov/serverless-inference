@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Build on DigitalOcean — architecture</title>
+  <link rel="icon" href="favicon.ico" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="theme.js"></script>
+  <style>
+    /* page-specific layer on top of the shared .mars rules in styles.css */
+    main.wide { max-width: 1400px; }
+    .mars { font-size: 18px; }
+    .mars.bod { --bw: 262px; --bh: 150px; --gap: 24px; --fh: calc(48px + var(--bh) + 24px); --sh: calc(2 * var(--fh) + 24px); flex-direction: column; align-items: center; padding-bottom: 0; gap: 20px; }
+    .mars .row { position: relative; display: flex; align-items: flex-start; }
+    .mars .net { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 2; }
+    .mars .stack { display: flex; flex-direction: column; gap: 24px; }
+    /* both frames are one row of 4 cells and the same size; every block is the same size, whatever it holds */
+    .mars .frame.grid { display: grid; grid-template-columns: repeat(4, var(--bw)); grid-auto-rows: var(--bh); gap: var(--gap); align-content: start;
+      width: calc(4 * var(--bw) + 3 * var(--gap) + 48px); height: var(--fh); }
+    /* AI/ML holds 3 blocks, so it is trimmed to them: same 24px side padding and block gap as Core Cloud */
+    .mars .frame.grid.ai { grid-template-columns: repeat(3, var(--bw)); width: calc(3 * var(--bw) + 2 * var(--gap) + 48px); }
+    .mars .node.blk { width: var(--bw); height: var(--bh); padding: 18px; }
+    /* blocks lift quickly (.2s) but settle back slowly (.7s) so the line has gone by the time they land */
+    .mars .node.blk { transition-duration: .7s; }
+    .mars .node.blk:hover { transition-duration: .2s; }
+    .mars .node.blk .head { font-size: 18px; line-height: 1.5; }
+    /* sub-blocks reuse the dashed .inner box from managed-agents.html */
+    .mars .inner.subs { display: flex; margin: 18px 0 0; padding: 18px 6px 14px; font-size: 15px; white-space: nowrap; }
+    .mars .inner.subs .tag { font-size: 12px; }
+    .mars .inner.subs > span:not(.tag) { flex: 1 1 auto; padding: 0 8px; text-align: center; }
+    .mars .desc { margin-top: 12px; white-space: nowrap; font-size: 15px; letter-spacing: .04em; line-height: 1.5; }   /* same type as the chips; colour is inherited so it lights with the block */
+    /* a small dot, not a bar, between chips: centred on the boundary, same colour as the text but dimmer */
+    .mars .inner.subs > span:not(.tag) + span:not(.tag) { position: relative; }
+    .mars .inner.subs > span:not(.tag) + span:not(.tag)::before { content: "•"; position: absolute; left: 0; top: 50%; transform: translate(-50%, -50%); font-size: 8px; opacity: .55; }
+    /* type sizes in the diagram: 12 (tabs, pill), 15 (chips), 18 (titles, captions, You). */
+    /* "You": face + label, centred on the Core Cloud frame so the deploy arrow meets it */
+    .mars .you { position: relative; width: 100px; height: var(--sh); color: var(--mid-border); transition: color .2s; }
+    .mars .you svg { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 132px; height: 132px; }
+    .mars .you .who { position: absolute; left: 0; right: 0; top: calc(50% + 100px); display: flex; justify-content: center; }   /* well below the face: the pill is not its caption */
+    .mars .you .face { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+    .mars .you .eye { fill: currentColor; stroke: none; }
+    /* "Agent" is the mouth: set along the smile's curve, 132/120 scale so font-size 16.4 = the diagram's 18px */
+    .mars .you .mouth { fill: var(--bright); font: 700 16.4px var(--mono); letter-spacing: 3px; }
+    /* deploy pill: quiet outline until hovered, so it doesn't outshine the diagram */
+    .mars .you .sample { background: transparent; color: var(--dim-text); border-color: var(--dim-border); box-shadow: none; font-size: 12px; padding: 1px 10px; }
+    /* quiet link to the instructions page, top right (same dim style as the pill) */
+    .to-instr { position: absolute; top: 16px; right: 60px; font-size: 12px; color: var(--dim-text); text-decoration: none; border: 1px solid var(--dim-border); border-radius: 999px; padding: 1px 10px; transition: color .2s, border-color .2s; }
+    .to-instr:hover, .to-instr:focus-visible { color: var(--bright); border-color: var(--mid-border); }
+    .mars .you .sample:hover, .mars .you .sample:focus-visible { color: var(--bright); border-color: var(--mid-border); box-shadow: none; transform: none; }
+    .mars .row > .link-h { width: 84px; padding: 0 6px; height: var(--sh); margin-top: 0; }
+    .mars .net .arr { opacity: 0; stroke: var(--bright); stroke-dasharray: 5 5; animation: mars-flow .6s linear infinite; transition: opacity .1s .1s; }   /* same delay in and out, so the line follows the blocks' 0.2s lift/drop */
+    /* hover captions sit in a fixed strip under the diagram */
+    .mars .caps { position: relative; width: 100%; height: 64px; }
+    .mars .caps .cap { top: 0; width: 800px; }
+
+    /* label mechanism (as inference-router.html): hover/focus the deploy pill → glow the blocks you deploy to and turn on the arrow */
+    .mars:has(.sample[data-for="deploy"]:is(:hover,:focus-visible)) .node[data-chain~="deploy"] { transform: translateY(-4px); color: var(--bright); border-color: var(--bright); box-shadow: 0 0 24px 2px var(--glow); transition-duration: .2s; }
+    .mars:has(.sample[data-for="deploy"]:is(:hover,:focus-visible)) .cap[data-chain~="deploy"] { opacity: 1; }
+    .mars:has(.node[data-chain~="droplets"]:hover) .cap[data-chain~="droplets"],
+    .mars:has(.node[data-chain~="app"]:hover) .cap[data-chain~="app"],
+    .mars:has(.node[data-chain~="db"]:hover) .cap[data-chain~="db"],
+    .mars:has(.node[data-chain~="storage"]:hover) .cap[data-chain~="storage"],
+    .mars:has(.node[data-chain~="inference"]:hover) .cap[data-chain~="inference"],
+    .mars:has(.node[data-chain~="agents"]:hover) .cap[data-chain~="agents"],
+    .mars:has(.node[data-chain~="gpu"]:hover) .cap[data-chain~="gpu"] { opacity: 1; }
+    .mars:has(.sample[data-for="deploy"]:is(:hover,:focus-visible)) .arr[data-c~="core"] { opacity: 1; }
+    .mars:has(.sample[data-for="deploy"]:is(:hover,:focus-visible)) .you { color: var(--bright); }
+  </style>
+</head>
+<body>
+  <a class="to-instr" href="instructions.html">Instructions →</a>
+  <main class="wide">
+    <h1 class="title">Build on DigitalOcean</h1>
+
+    <div class="mars bod">
+      <div class="row">
+        <svg class="net" aria-hidden="true"><path class="arr" data-c="core" d=""/></svg>
+        <div class="you">
+          <svg viewBox="0 0 120 120" role="img" aria-label="Agent"><defs><path id="smile" d="M28 66Q60 104 92 66"/></defs><circle class="face" cx="60" cy="60" r="54"/><circle class="eye" cx="42" cy="44" r="6"/><circle class="eye" cx="78" cy="44" r="6"/><text class="mouth"><textPath href="#smile" startOffset="50%" text-anchor="middle">Agent</textPath></text></svg>
+          <div class="who">
+            <button class="sample" type="button" data-for="deploy">deploy</button>
+          </div>
+        </div>
+
+        <div class="link-h"></div>
+
+        <div class="stack">
+          <div class="frame grid"><span class="frame-title">Core Cloud</span>
+          <div class="stage node blk core" data-chain="droplets"><div class="head">Droplets/Kubernetes</div><div class="desc">16 data centers<br>worldwide</div></div>
+          <div class="stage node blk core" data-chain="app deploy"><div class="head">App Platform</div><div class="desc">Easiest way<br>to deploy your project<br>from GitHub</div></div>
+          <div class="stage node blk core" data-chain="db deploy"><div class="head">Databases</div><div class="inner subs"><span class="tag">engine</span><span>SQL</span><span>NoSQL</span></div></div>
+          <div class="stage node blk core" data-chain="storage deploy"><div class="head">Storage</div><div class="inner subs"><span class="tag">type</span><span>Spaces</span><span>Volumes</span><span>NFS</span></div></div>
+          </div>
+          <div class="frame grid ai"><span class="frame-title">AI/ML</span>
+          <div class="stage node blk" data-chain="inference deploy"><div class="head">Inference Engine</div><div class="inner subs"><span class="tag">model</span><span>Text</span><span>Media</span></div></div>
+          <div class="stage node blk" data-chain="agents"><div class="head">Managed Agents</div><div class="desc">Your agents,<br>your harness,<br>running 24/7</div></div>
+          <div class="stage node blk" data-chain="gpu"><div class="head">GPU Droplets</div><div class="inner subs"><span class="tag">vendor</span><span>NVIDIA</span><span>AMD</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="caps">
+        <div class="cap" data-chain="droplets"><b>Droplets/Kubernetes</b>Virtual machines and managed Kubernetes,<br>in 16 data centers.</div>
+        <div class="cap" data-chain="app"><b>App Platform</b>Deploy apps from code or containers.</div>
+        <div class="cap" data-chain="db"><b>Databases</b>Managed PostgreSQL, MySQL, etc.</div>
+        <div class="cap" data-chain="storage"><b>Storage</b>Spaces (object), Volumes (block), NFS (file).</div>
+        <div class="cap" data-chain="inference"><b>Inference Engine</b>Call open-weight and pass-through models by API.</div>
+        <div class="cap" data-chain="agents"><b>Managed Agents</b>Run your agent in a secure runtime,<br>and let it act in GitHub, Jira and 20,000+ other tools.</div>
+        <div class="cap" data-chain="gpu"><b>GPU Droplets</b>GPU virtual machines.</div>
+        <div class="cap" data-chain="deploy"><b>Deploy</b>Your agent deploys via MCP or a plugin.</div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+  /* deploy arrow: one trunk from the face through the gap between the frames, then a branch to every
+     highlighted block (.node[data-chain~="deploy"]) — up to Core Cloud, down to AI/ML — each running right up to its block.
+     Positions come from layout offsets (not bounding rects), so the hover lift doesn't shift the geometry. */
+  (function () {
+    var row = document.querySelector(".mars .row");
+    var path = row.querySelector(".net .arr");
+    var you = row.querySelector(".you");
+    var frames = row.querySelectorAll(".frame");
+    var START = 10, LIFT = 4;   // lit blocks rise 4px on hover (see .node:hover), so end the line on the lifted edge
+
+    function pos(el) {
+      var x = 0, y = 0;
+      while (el && el !== row) { x += el.offsetLeft; y += el.offsetTop; el = el.offsetParent; }
+      return { x: x, y: y };
+    }
+
+    function draw() {
+      var core = pos(frames[0]), ai = pos(frames[1]);
+      var gapY = Math.round((core.y + frames[0].offsetHeight + ai.y) / 2);
+      var x0 = Math.round(pos(you).x + you.offsetWidth / 2 + you.querySelector('svg').getBoundingClientRect().width / 2 + START);   // face edge + gap
+      var blocks = row.querySelectorAll('.node[data-chain~="deploy"]');
+      var d = "", xEnd = x0;
+      Array.prototype.forEach.call(blocks, function (b) {
+        var p = pos(b), bx = Math.round(p.x + b.offsetWidth / 2);
+        var up = p.y + b.offsetHeight / 2 < gapY;
+        var ye = (up ? p.y + b.offsetHeight : p.y) - LIFT;
+        d += "M" + bx + " " + gapY + "V" + ye;
+        if (bx > xEnd) xEnd = bx;
+      });
+      path.setAttribute("d", d ? "M" + x0 + " " + gapY + "H" + xEnd + d : "");
+    }
+
+    draw();
+    window.addEventListener("load", draw);
+    window.addEventListener("resize", draw);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+    if (window.ResizeObserver) new ResizeObserver(draw).observe(row);
+    new MutationObserver(draw).observe(row, { attributes: true, attributeFilter: ["data-chain"], subtree: true });
+    var pill = row.querySelector('.sample[data-for="deploy"]');
+    ["mouseenter", "focus"].forEach(function (e) { pill.addEventListener(e, draw); });
+  })();
+  </script>
+
+  <footer class="cellar">
+    <img class="do-logo" src="do_logo_horizontal_black.svg" alt="DigitalOcean" />
+  </footer>
+</body>
+</html>
