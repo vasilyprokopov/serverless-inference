@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>digitalocean ai — the bigger picture</title>
+  <link rel="icon" href="favicon.ico" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="theme.js"></script>
+</head>
+<body>
+  <main>
+    <h1 class="title">AI Play</h1>
+    
+    <div class="stacks">
+      <!-- GPU Droplets -->
+      <div class="stack">
+        <div class="layers">
+          <div class="layer cust">prompts</div>
+          <div class="layer cust">model</div>
+          <div class="layer cust">kubernetes / inference engine</div>
+          <div class="layer do">gpu</div>
+        </div>
+        <div class="stack-name">GPU Droplets</div>
+        <div class="stack-tier">per GPU/hr</div>
+      </div>
+
+      <!-- Dedicated Inference -->
+      <div class="stack">
+        <div class="layers">
+          <div class="layer cust">prompts</div>
+          <div class="layer split">model <span class="byom">byom</span></div>
+          <div class="layer do">kubernetes / inference engine</div>
+          <div class="layer do">gpu</div>
+        </div>
+        <div class="stack-name">Dedicated Inference</div>
+        <div class="stack-tier">per GPU/hr</div>
+      </div>
+
+      <!-- Serverless Inference (the demo) -->
+      <a class="stack link" href="serverless-inference.html">
+        <div class="layers">
+          <div class="layer cust">prompts</div>
+          <div class="shared">
+            <div class="layer do">model</div>
+            <div class="layer do">kubernetes / inference engine</div>
+            <div class="layer do">gpu</div>
+            <span class="shared-tag">shared</span>
+          </div>
+        </div>
+        <div class="stack-name">Serverless Inference ↗</div>
+        <div class="stack-tier">per Mtok</div>
+      </a>
+    </div>
+
+    <!-- inference router fronts both Dedicated (PaaS) and Serverless (TaaS) -->
+    <a class="router link" href="inference-router.html" title="how the inference router classifies and routes prompts">
+      <span class="arm l"></span>
+      <span class="bar"></span>
+      <span class="arm r"></span>
+      <span class="stem"></span>
+      <span class="router-label">inference router ↗</span>
+    </a>
+
+    <div class="legend">
+      <span class="legend-item"><span class="swatch hollow"></span> customer operated</span>
+      <span class="legend-item"><span class="swatch filled"></span> digitalocean operated</span>
+      <span class="legend-item"><span class="swatch shared"></span> shared (multi-tenant)</span>
+    </div>
+
+  </main>
+
+  <footer class="cellar">
+    <img class="do-logo" src="do_logo_horizontal_black.svg" alt="DigitalOcean" />
+  </footer>
+</body>
+</html>

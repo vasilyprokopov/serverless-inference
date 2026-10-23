@@ -5,7 +5,7 @@ Plain HTML/CSS/JS — no build step, no server-side code. Every page has a dark/
 
 ## Pages
 
-- `index.html` — landing page: where Serverless Inference sits in the DigitalOcean AI stack
+- `ai-play.html` — landing page: where Serverless Inference sits in the DigitalOcean AI stack
   (Droplets / Dedicated Inference / Serverless Inference). Links out to the live demo and the
   inference router diagram.
 - `serverless-inference.html` — live demo. Enter a DO model access key and a model (or
