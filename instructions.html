@@ -63,34 +63,28 @@
         <div class="row"><span class="n">2</span>
           <div class="text">Connect Grok Bot to DigitalOcean</div>
           <button class="i" type="button" aria-label="More about step 2"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="13"/><circle class="dot" cx="15" cy="9.5" r="1.5"/><path d="M15 13.5v8"/></svg></button></div>
-        <div class="detail"><p>Go to Connect Apps &gt; DigitalOcean. It installs the DigitalOcean plugin, which comes in seven parts: Droplets, Apps, Accounts, Databases, Networking, Insights and Docs.</p></div>
+        <div class="detail"><p>Go to Connect Apps &gt; DigitalOcean and sign in with your DigitalOcean account. The bot never sees your password. The default permission is read only. To let the bot create, add write permission (full access).</p></div>
       </li>
       <li class="step">
         <div class="row"><span class="n">3</span>
-          <div class="text">Sign in to each DigitalOcean plugin part from the chat</div>
-          <button class="i" type="button" aria-label="More about step 3"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="13"/><circle class="dot" cx="15" cy="9.5" r="1.5"/><path d="M15 13.5v8"/></svg></button></div>
-        <div class="detail"><p>Tell the bot: “Sign me in to all the DigitalOcean parts that still need it, one at a time.” Approve each sign-in card that appears. No tokens are needed, and the bot never sees your password.</p></div>
-      </li>
-      <li class="step">
-        <div class="row"><span class="n">4</span>
           <div class="text">Check that Grok Bot sees your account</div>
-          <button class="i" type="button" aria-label="More about step 4"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="13"/><circle class="dot" cx="15" cy="9.5" r="1.5"/><path d="M15 13.5v8"/></svg></button></div>
+          <button class="i" type="button" aria-label="More about step 3"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="13"/><circle class="dot" cx="15" cy="9.5" r="1.5"/><path d="M15 13.5v8"/></svg></button></div>
         <div class="detail"><p>Ask “list my droplets” or “what apps do I have?” If it answers, you’re set. The bot asks before changing or deleting anything.</p></div>
       </li>
       <li class="step opt">
-        <div class="row"><span class="n">5</span>
-          <div class="text">Add <code>doctl</code> for what the plugin doesn’t cover<span class="tagl">optional</span></div>
-          <button class="i" type="button" aria-label="More about step 5"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="13"/><circle class="dot" cx="15" cy="9.5" r="1.5"/><path d="M15 13.5v8"/></svg></button></div>
+        <div class="row"><span class="n">4</span>
+          <div class="text">Add <code>doctl</code> for what the connector doesn’t cover<span class="tagl">optional</span></div>
+          <button class="i" type="button" aria-label="More about step 4"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="13"/><circle class="dot" cx="15" cy="9.5" r="1.5"/><path d="M15 13.5v8"/></svg></button></div>
         <div class="detail"><p>doctl is the DigitalOcean command-line tool. Ask the bot to “install doctl on your computer and sign it in through the browser with read and write access”. It goes on the bot’s own computer, and no token is needed.</p></div>
       </li>
       <li class="step opt">
-        <div class="row"><span class="n">6</span>
+        <div class="row"><span class="n">5</span>
           <div class="text">Give the bot your access keys<span class="tagl">optional</span></div>
-          <button class="i" type="button" aria-label="More about step 6"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="13"/><circle class="dot" cx="15" cy="9.5" r="1.5"/><path d="M15 13.5v8"/></svg></button></div>
+          <button class="i" type="button" aria-label="More about step 5"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="13"/><circle class="dot" cx="15" cy="9.5" r="1.5"/><path d="M15 13.5v8"/></svg></button></div>
         <div class="detail"><p>Create a Spaces key and a model access key in the DigitalOcean control panel. Then ask the bot to request each one and paste it into the masked box, never into the chat.</p></div>
       </li>
       <li class="step">
-        <div class="row"><span class="n">7</span>
+        <div class="row"><span class="n">6</span>
           <div class="text">Build and have fun, and we’ll help if you get stuck</div>
           <span class="gap-i"></span></div>
       </li>
